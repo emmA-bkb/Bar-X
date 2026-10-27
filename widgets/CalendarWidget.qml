@@ -14,7 +14,7 @@ WidgetCard {
     readonly property int month: today.getMonth()
     readonly property int year: today.getFullYear()
 
-    // 42 dias (6 semanas) comecando no domingo antes do dia 1
+    // 42 days (6 weeks) starting on the Sunday before the 1st
     readonly property var days: {
         const start = new Date(year, month, 1).getDay();
         const list = [];
@@ -34,7 +34,7 @@ WidgetCard {
             WText {
                 width: parent.width - yearText.width
                 text: {
-                    const m = Qt.locale("pt_BR").standaloneMonthName(root.month);
+                    const m = Qt.locale("en_US").standaloneMonthName(root.month);
                     return m.charAt(0).toUpperCase() + m.slice(1);
                 }
                 font.pixelSize: 22
@@ -55,7 +55,7 @@ WidgetCard {
             rowSpacing: 0
 
             Repeater {
-                model: ["D", "S", "T", "Q", "Q", "S", "S"]
+                model: ["S", "M", "T", "W", "T", "F", "S"]
 
                 delegate: WText {
                     required property string modelData

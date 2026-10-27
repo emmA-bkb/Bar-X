@@ -1,7 +1,7 @@
 import QtQuick
 import qs.config
 
-// Fundo padrao de todos os widgets. As cores vem da paleta (manual ou do wallpaper).
+// Default background of every widget. Colors come from the palette (manual or wallpaper).
 Rectangle {
     readonly property bool isWidgetCard: true
 
@@ -11,9 +11,9 @@ Rectangle {
     property color fgDim: Theme.textDim
     property color fgMuted: Theme.textMuted
     property color onAccent: Theme.accentText
-    // 0 = sem fundo, 1 = fundo solido
+    // 0 = no background, 1 = solid background
     property real backgroundOpacity: 0.89
-    // plain: o cartao nao desenha fundo (o widget desenha os proprios blocos)
+    // plain: the card draws no background (the widget draws its own tiles)
     property bool plain: false
 
     radius: 30

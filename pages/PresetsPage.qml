@@ -2,7 +2,7 @@ import QtQuick
 import qs.config
 import qs.components
 
-// Lista de presets (wallpaper + barra + cor). Clicar em um card aplica o preset.
+// Preset list (wallpaper + bar + color). Clicking a card applies the preset.
 Item {
     id: root
 
@@ -16,11 +16,12 @@ Item {
             "bar": Config.currentBarStyle(),
             "accent": Config.options.accent,
             "wallpaper": Config.options.wallpaper,
+            "monitorWallpapers": Config.currentMonitorWallpapers(),
             "widgets": Config.options.activeLayout,
             "transparency": Config.currentTransparency()
         });
         Config.options.activePreset = id;
-        Ui.notify("Preset criado com o wallpaper e a cor atuais");
+        Ui.notify("Preset created with the current wallpaper and color");
     }
 
     Item {
@@ -35,12 +36,12 @@ Item {
             spacing: 3
 
             StyledText {
-                text: "Escolha um visual"
+                text: "Choose a look"
                 font.pixelSize: 15
                 font.weight: Font.DemiBold
             }
             StyledText {
-                text: "Cada preset junta um wallpaper, um estilo de barra e uma cor de destaque."
+                text: "Each preset combines a wallpaper, a bar style and an accent color."
                 color: Theme.textMuted
                 font.pixelSize: 12
             }
@@ -50,7 +51,7 @@ Item {
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
             icon: Icons.add
-            text: "Novo preset"
+            text: "New preset"
             primary: true
             onClicked: root.newPreset()
         }

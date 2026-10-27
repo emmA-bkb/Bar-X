@@ -2,7 +2,7 @@ pragma Singleton
 import QtQuick
 import Quickshell
 
-// Cores, fontes e medidas usadas em toda a interface.
+// Colors, fonts and sizes used across the whole interface.
 Singleton {
     readonly property string font: "Adwaita Sans"
 

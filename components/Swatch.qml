@@ -1,12 +1,12 @@
 import QtQuick
 import qs.config
 
-// Bolinha de cor clicavel (com check quando selecionada).
+// Clickable color dot (with a check when selected).
 Rectangle {
     id: root
 
     property bool selected: false
-    property string label: "" // texto dentro (ex.: "Auto")
+    property string label: "" // text inside (e.g. "Auto")
     signal clicked
 
     width: 34

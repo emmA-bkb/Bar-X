@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # Starts Uix on login: bar + widgets, saved monitor layout and the wallpaper of each monitor.
-# No hyprland.lua, no lugar da waybar e do linux-wallpaper-engine-ux:
-#   hl.exec_cmd("/caminho/para/o/projeto/scripts/uix-start.sh")
+# In hyprland.lua, instead of waybar and linux-wallpaper-engine-ux:
+#   hl.exec_cmd("/path/to/the/project/scripts/uix-start.sh")
 #
-# Teste sem mudar nada:  DRY=1 scripts/uix-start.sh   (so mostra o que faria)
+# Test without changing anything:  DRY=1 scripts/uix-start.sh   (only prints what it would do)
 dir="$(cd "$(dirname "$(readlink -f "$0")")/.." && pwd)"
 mkdir -p "$HOME/.config/uix"
 
@@ -15,7 +15,7 @@ run() {
     fi
 }
 
-# Le a config do Uix: barra, widgets e o wallpaper a aplicar
+# Reads the Uix config: bar, widgets and the wallpaper to apply
 mapfile -t cfg < <(python3 -I - "$HOME/.config/uix/config.json" <<'EOF'
 import json, sys
 try:

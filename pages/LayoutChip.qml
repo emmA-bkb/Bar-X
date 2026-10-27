@@ -2,7 +2,7 @@ import QtQuick
 import qs.config
 import qs.components
 
-// Chip de um layout de widgets. Clique seleciona, clique duplo renomeia.
+// Widget layout chip. Click selects, double click renames.
 Rectangle {
     id: root
 
@@ -90,7 +90,7 @@ Rectangle {
         onClicked: {
             const name = root.layout.name;
             Config.removeLayout(root.layout.id);
-            Ui.notify("Layout \"" + name + "\" removido");
+            Ui.notify("Layout \"" + name + "\" removed");
         }
     }
 }

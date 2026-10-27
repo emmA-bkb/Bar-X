@@ -3,7 +3,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 
-// Uso de CPU, RAM e disco, atualizado a cada 2 segundos.
+// CPU, RAM and disk usage, updated every 2 seconds.
 Singleton {
     id: root
 

@@ -2,8 +2,8 @@ import QtQuick
 import qs.config
 import qs.services
 
-// Carrega o widget certo pelo tipo, no tamanho real (pixels da tela),
-// e repassa as cores (paleta manual ou do wallpaper).
+// Loads the right widget by type, at real size (screen pixels),
+// and passes down the colors (manual palette or wallpaper).
 Item {
     id: root
 
@@ -11,9 +11,9 @@ Item {
     // { accent, bg, fg, fgDim, fgMuted, onAccent }
     property var colors: Colors.current
     property real backgroundOpacity: Ui.defaultBg(type)
-    // Efeito vidro: 0 = normal, 1 = fundo totalmente transparente
+    // Glass effect: 0 = normal, 1 = fully transparent background
     property real glass: 0
-    // Texto escuro (vidro sobre wallpaper claro)
+    // Dark text (glass over a light wallpaper)
     property bool darkText: false
 
     readonly property var info: Ui.widgetType(type)

@@ -1,8 +1,8 @@
 import QtQuick
 import qs.config
 
-// Controle deslizante. Emite moved() enquanto arrasta e committed() ao soltar,
-// para nao salvar o config a cada pixel.
+// Slider. Emits moved() while dragging and committed() on release,
+// so the config isn't saved on every pixel.
 Item {
     id: root
 

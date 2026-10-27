@@ -26,7 +26,7 @@ ShellRoot {
             "component": wallpaperPage
         },
         {
-            "title": "Barra",
+            "title": "Bar",
             "icon": Icons.bar,
             "component": barPage
         },
@@ -36,17 +36,17 @@ ShellRoot {
             "component": widgetsPage
         },
         {
-            "title": "Monitores",
+            "title": "Monitors",
             "icon": Icons.monitor,
             "component": monitorsPage
         },
         {
-            "title": "Aparência",
+            "title": "Appearance",
             "icon": Icons.palette,
             "component": appearancePage
         },
         {
-            "title": "Sobre",
+            "title": "About",
             "icon": Icons.info,
             "component": aboutPage
         }
@@ -66,7 +66,7 @@ ShellRoot {
 
     Component.onCompleted: show()
 
-    // qs -p <pasta> ipc call uix toggle
+    // qs -p <folder> ipc call uix toggle
     IpcHandler {
         target: "uix"
 
@@ -168,7 +168,7 @@ ShellRoot {
             focus: true
             Keys.onEscapePressed: root.hide()
 
-            // ---------- Barra lateral ----------
+            // ---------- Sidebar ----------
             Rectangle {
                 id: sidebar
 
@@ -180,7 +180,7 @@ ShellRoot {
                 radius: Theme.radius - 6
                 color: Theme.sidebar
 
-                // Perfil
+                // Profile
                 Row {
                     id: profile
                     anchors.left: parent.left
@@ -246,7 +246,7 @@ ShellRoot {
                     anchors.leftMargin: 14
                     implicitHeight: 48
                     icon: Icons.edit
-                    text: "Arquivo de config"
+                    text: "Config file"
                     onClicked: Quickshell.execDetached(["xdg-open", Config.path])
                 }
 
@@ -276,7 +276,7 @@ ShellRoot {
                 }
             }
 
-            // ---------- Conteudo ----------
+            // ---------- Content ----------
             Item {
                 id: contentArea
 
@@ -289,7 +289,7 @@ ShellRoot {
                 anchors.topMargin: 22
                 anchors.bottomMargin: 22
 
-                // Cabecalho da pagina
+                // Page header
                 Item {
                     id: header
                     anchors.left: parent.left
@@ -366,7 +366,7 @@ ShellRoot {
                 }
             }
 
-            // ---------- Seletor de cor (por cima de tudo) ----------
+            // ---------- Color picker (above everything) ----------
             Rectangle {
                 id: pickerLayer
                 anchors.fill: parent
@@ -382,7 +382,7 @@ ShellRoot {
                     }
                 }
 
-                // Clique fora fecha
+                // Clicking outside closes it
                 MouseArea {
                     anchors.fill: parent
                     onClicked: Ui.colorRequest = null
@@ -418,7 +418,7 @@ ShellRoot {
                 }
             }
 
-            // ---------- Aviso (toast) ----------
+            // ---------- Notice (toast) ----------
             Rectangle {
                 id: toast
 

@@ -1,7 +1,7 @@
 import QtQuick
 import qs.config
 
-// Interruptor liga/desliga.
+// On/off switch.
 Rectangle {
     id: root
 

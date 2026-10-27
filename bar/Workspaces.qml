@@ -3,8 +3,8 @@ import Quickshell.Hyprland
 import qs.config
 import qs.components
 
-// Workspaces do monitor da barra. Clique troca de workspace, roda do mouse navega.
-// No estilo Tonal o workspace ativo vira uma florzinha.
+// Workspaces of the bar's monitor. Click switches workspace, mouse wheel navigates.
+// In the Tonal style the active workspace becomes a flower.
 BarGroup {
     id: root
 
@@ -13,7 +13,7 @@ BarGroup {
     readonly property var workspaces: Hyprland.workspaces.values.filter(w => w.id > 0 && (!monitor || w.monitor === monitor)).sort((a, b) => a.id - b.id)
 
     function go(target) {
-        // Hyprland com config em Lua usa outra sintaxe de dispatch
+        // Hyprland with a Lua config uses a different dispatch syntax
         Hyprland.dispatch(Hyprland.usingLua ? "hl.dsp.focus({ workspace = " + target + " })" : "workspace " + target);
     }
 
@@ -28,7 +28,7 @@ BarGroup {
             required property var modelData
             readonly property bool active: modelData.active
             readonly property real size: BarStyle.minimal ? 8 : BarStyle.itemHeight
-            // O ativo fica comprido (exceto no Tonal, onde vira flor)
+            // The active one is wider (except on Tonal, where it becomes a flower)
             readonly property real length: active && !BarStyle.tonal ? (BarStyle.minimal ? 20 : 40) : size
 
             width: BarStyle.vertical ? size : length
@@ -87,7 +87,7 @@ BarGroup {
         }
     }
 
-    // Roda do mouse sobre os workspaces troca para o anterior/proximo
+    // Mouse wheel over the workspaces switches to the previous/next one
     WheelHandler {
         acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
         onWheel: event => {

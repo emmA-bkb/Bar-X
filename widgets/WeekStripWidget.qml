@@ -2,7 +2,7 @@ import QtQuick
 import Quickshell
 import qs.config
 
-// Calendario so da semana atual, com o mes numa pilula.
+// Calendar of the current week only, with the month in a pill.
 WidgetCard {
     id: root
 
@@ -35,7 +35,7 @@ WidgetCard {
             id: monthText
             anchors.centerIn: parent
             text: {
-                const m = Qt.locale("pt_BR").standaloneMonthName(root.today.getMonth());
+                const m = Qt.locale("en_US").standaloneMonthName(root.today.getMonth());
                 return m.charAt(0).toUpperCase() + m.slice(1) + " " + root.today.getFullYear();
             }
             color: root.onAccent
@@ -64,7 +64,7 @@ WidgetCard {
 
                 WText {
                     anchors.horizontalCenter: parent.horizontalCenter
-                    text: ["D", "S", "T", "Q", "Q", "S", "S"][day.index]
+                    text: ["S", "M", "T", "W", "T", "F", "S"][day.index]
                     color: root.fgMuted
                     font.pixelSize: 13
                     font.weight: Font.DemiBold

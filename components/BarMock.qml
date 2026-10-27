@@ -1,13 +1,13 @@
 import QtQuick
 import qs.config
 
-// Miniatura de uma barra de tarefas desenhada sobre a previa do wallpaper.
+// Miniature taskbar drawn over the wallpaper preview.
 Item {
     id: root
 
     property string barStyle: "floating"
     property color accent: Theme.accent
-    property real unit: 1 // escala: 1 = card pequeno
+    property real unit: 1 // scale: 1 = small card
 
     property real glass: 0
     readonly property color barColor: Qt.rgba(0.063, 0.071, 0.078, 0.82 * (1 - glass * 0.8))
@@ -30,7 +30,7 @@ Item {
         color: "#b0ffffff"
     }
 
-    // Flutuante
+    // Floating
     Rectangle {
         visible: root.barStyle === "floating"
         x: 6 * root.unit
@@ -62,7 +62,7 @@ Item {
         }
     }
 
-    // Ilhas (e Tonal, com as pilulas tingidas)
+    // Islands (and Tonal, with tinted pills)
     Item {
         visible: root.barStyle === "island" || root.barStyle === "tonal"
         x: 6 * root.unit
@@ -108,7 +108,7 @@ Item {
         }
     }
 
-    // Minimalista
+    // Minimal
     Rectangle {
         visible: root.barStyle === "minimal"
         width: root.width
@@ -133,7 +133,7 @@ Item {
     readonly property bool sideStyle: barStyle.startsWith("side")
     readonly property bool sideIslands: barStyle === "side-island" || barStyle === "side-tonal"
 
-    // Doca embaixo (pequena e centralizada)
+    // Bottom dock (small and centered)
     Rectangle {
         visible: root.barStyle.startsWith("bottom")
         anchors.horizontalCenter: parent.horizontalCenter
@@ -169,7 +169,7 @@ Item {
         }
     }
 
-    // Lateral inteira ou minimalista
+    // Side bar, full or minimal
     Rectangle {
         visible: root.barStyle === "side" || root.barStyle === "side-minimal"
         readonly property bool thin: root.barStyle === "side-minimal"
@@ -206,7 +206,7 @@ Item {
         }
     }
 
-    // Lateral em ilhas (e tonal): tres pilulas separadas
+    // Side bar in islands (and tonal): three separate pills
     Item {
         visible: root.sideIslands
         x: 4 * root.unit

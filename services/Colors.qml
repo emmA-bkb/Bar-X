@@ -4,18 +4,18 @@ import Quickshell
 import Quickshell.Io
 import qs.config
 
-// Cores dos widgets (e, se ligado, da barra).
-//   widgetColorMode = "wallpaper" -> tiradas do wallpaper (scripts/palette.py, com cache)
-//   widgetColorMode = "manual"    -> escolhidas em Aparencia
+// Widget colors (and, if enabled, the bar's).
+//   widgetColorMode = "wallpaper" -> taken from the wallpaper (scripts/palette.py, cached)
+//   widgetColorMode = "manual"    -> chosen in Appearance
 Singleton {
     id: root
 
     readonly property bool dynamic: Config.options.widgetColorMode === "wallpaper"
 
-    // Paleta escolhida a mao
+    // Hand-picked palette
     readonly property var manual: {
         const accent = Config.options.widgetAccent || Config.options.accent;
-        // Fundo claro -> texto escuro
+        // Light background -> dark text
         const light = onColor(Config.options.widgetBackground) !== "#f4f6f7";
         return {
             "accent": accent,
@@ -27,14 +27,14 @@ Singleton {
         };
     }
 
-    // Paleta do wallpaper em uso agora
+    // Palette of the wallpaper in use now
     readonly property var current: forWallpaper(Config.options.wallpaper)
 
-    // miniatura -> paleta
+    // thumbnail -> palette
     property var cache: ({})
     property var queue: []
 
-    // Texto escuro ou claro, conforme a cor de fundo
+    // Dark or light text, depending on the background color
     function onColor(c) {
         const col = Qt.color(c);
         const lum = 0.2126 * col.r + 0.7152 * col.g + 0.0722 * col.b;
@@ -55,7 +55,7 @@ Singleton {
         return manual;
     }
 
-    // Wallpaper claro? (usa o brilho medio calculado pelo palette.py)
+    // Light wallpaper? (uses the average brightness computed by palette.py)
     function isLight(thumb) {
         if (!thumb || thumb.startsWith("http"))
             return false;
@@ -67,7 +67,7 @@ Singleton {
         return (c.lum ?? 0) > 0.55;
     }
 
-    // Com bastante transparencia num wallpaper claro, o texto branco some: usa texto escuro
+    // With a lot of transparency on a light wallpaper, white text disappears: use dark text
     function glassText(transparency, thumb) {
         return transparency >= 0.4 && isLight(thumb);
     }

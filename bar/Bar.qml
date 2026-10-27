@@ -1,8 +1,8 @@
 import QtQuick
 import Quickshell
 
-// Barra de tarefas do Uix para um monitor. Cria a janela certa para o estilo do preset:
-// em cima, doca embaixo ou lateral. Ao trocar de estilo, a janela antiga e trocada pela nova.
+// Uix taskbar for one monitor. Creates the right window for the preset's style:
+// top, bottom dock or side. When the style changes, the old window is replaced by the new one.
 Scope {
     id: root
 

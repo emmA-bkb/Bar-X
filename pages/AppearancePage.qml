@@ -3,7 +3,7 @@ import qs.config
 import qs.components
 import qs.services
 
-// Cor de destaque e opcoes gerais.
+// Accent color and general options.
 Flickable {
     id: root
 
@@ -11,7 +11,7 @@ Flickable {
 
     readonly property var backgrounds: ["#131618", "#000000", "#1b2030", "#1d2a26", "#2a1d26", "#2b231a", "#2a1b1b", "#241f33", "#e8e6e3"]
 
-    // Cor de destaque do app (e do preset ativo)
+    // App accent color (and the active preset's)
     function setAccent(hex) {
         Config.options.accent = hex;
         if (Config.preset(Config.options.activePreset))
@@ -49,7 +49,7 @@ Flickable {
                     }
                     StyledText {
                         anchors.verticalCenter: parent.verticalCenter
-                        text: "Cor de destaque"
+                        text: "Accent color"
                     }
                 }
 
@@ -97,18 +97,18 @@ Flickable {
                         }
                     }
 
-                    // Cor livre (RGB)
+                    // Free color (RGB)
                     CustomColorButton {
                         size: 36
                         current: Config.options.accent
                         presets: Ui.accents
-                        onClicked: Ui.pickColor("Cor de destaque", Config.options.accent, hex => root.setAccent(hex))
+                        onClicked: Ui.pickColor("Accent color", Config.options.accent, hex => root.setAccent(hex))
                     }
                 }
             }
         }
 
-        // ---------- Transparencia (efeito vidro) ----------
+        // ---------- Transparency (glass effect) ----------
         Rectangle {
             readonly property real amount: Config.currentTransparency()
             readonly property var activePreset: Config.preset(Config.options.activePreset)
@@ -145,10 +145,10 @@ Flickable {
                             anchors.verticalCenter: parent.verticalCenter
                             spacing: 2
                             StyledText {
-                                text: "Barra e widgets transparentes (vidro)"
+                                text: "Transparent bar and widgets (glass)"
                             }
                             StyledText {
-                                text: glassCard.activePreset ? "Vale para o preset \"" + glassCard.activePreset.name + "\"" : "Vale quando nenhum preset está ativo"
+                                text: glassCard.activePreset ? "Applies to the preset \"" + glassCard.activePreset.name + "\"" : "Applies when no preset is active"
                                 color: Theme.textMuted
                                 font.pixelSize: 12
                             }
@@ -173,7 +173,7 @@ Flickable {
                         anchors.left: parent.left
                         anchors.verticalCenter: parent.verticalCenter
                         width: 130
-                        text: "Intensidade  " + Math.round(glassSlider.shownValue) + "%"
+                        text: "Intensity  " + Math.round(glassSlider.shownValue) + "%"
                         color: Theme.textDim
                         font.pixelSize: 12
                     }
@@ -194,7 +194,7 @@ Flickable {
                 StyledText {
                     visible: glassCard.amount > 0
                     width: parent.width
-                    text: "O fundo atrás fica desfocado. Em wallpapers claros o texto fica escuro sozinho para dar para ler."
+                    text: "The background behind is blurred. On light wallpapers the text turns dark by itself so it stays readable."
                     color: Theme.textMuted
                     font.pixelSize: 11
                     wrapMode: Text.WordWrap
@@ -202,7 +202,7 @@ Flickable {
             }
         }
 
-        // ---------- Cores dos widgets ----------
+        // ---------- Widget colors ----------
         Rectangle {
             width: parent.width
             height: colorsColumn.height + 36
@@ -235,10 +235,10 @@ Flickable {
                             anchors.verticalCenter: parent.verticalCenter
                             spacing: 2
                             StyledText {
-                                text: "Cores dos widgets combinando com o wallpaper"
+                                text: "Widget colors matching the wallpaper"
                             }
                             StyledText {
-                                text: Config.options.widgetColorMode === "wallpaper" ? "Mudam sozinhas quando o wallpaper muda" : "Desligado: escolha as cores abaixo"
+                                text: Config.options.widgetColorMode === "wallpaper" ? "They change by themselves when the wallpaper changes" : "Off: choose the colors below"
                                 color: Theme.textMuted
                                 font.pixelSize: 12
                             }
@@ -253,7 +253,7 @@ Flickable {
                     }
                 }
 
-                // Automatico: mostra as cores tiradas do wallpaper atual
+                // Automatic: shows the colors taken from the current wallpaper
                 Row {
                     visible: Config.options.widgetColorMode === "wallpaper"
                     spacing: 10
@@ -262,15 +262,15 @@ Flickable {
                         model: [
                             {
                                 "key": "accent",
-                                "label": "Destaque"
+                                "label": "Accent"
                             },
                             {
                                 "key": "bg",
-                                "label": "Fundo"
+                                "label": "Background"
                             },
                             {
                                 "key": "fg",
-                                "label": "Texto"
+                                "label": "Text"
                             }
                         ]
 
@@ -298,13 +298,13 @@ Flickable {
                     }
                 }
 
-                // Manual: destaque e fundo
+                // Manual: accent and background
                 Column {
                     visible: Config.options.widgetColorMode !== "wallpaper"
                     spacing: 10
 
                     StyledText {
-                        text: "Destaque"
+                        text: "Accent"
                         color: Theme.textDim
                         font.pixelSize: 12
                     }
@@ -329,13 +329,13 @@ Flickable {
                         CustomColorButton {
                             current: Config.options.widgetAccent
                             presets: Ui.accents
-                            onClicked: Ui.pickColor("Destaque dos widgets", Config.options.widgetAccent || Config.options.accent, hex => Config.options.widgetAccent = hex)
+                            onClicked: Ui.pickColor("Widget accent", Config.options.widgetAccent || Config.options.accent, hex => Config.options.widgetAccent = hex)
                         }
                     }
 
                     StyledText {
                         topPadding: 4
-                        text: "Fundo"
+                        text: "Background"
                         color: Theme.textDim
                         font.pixelSize: 12
                     }
@@ -354,7 +354,7 @@ Flickable {
                         CustomColorButton {
                             current: Config.options.widgetBackground
                             presets: root.backgrounds
-                            onClicked: Ui.pickColor("Fundo dos widgets", Config.options.widgetBackground, hex => Config.options.widgetBackground = hex)
+                            onClicked: Ui.pickColor("Widget background", Config.options.widgetBackground, hex => Config.options.widgetBackground = hex)
                         }
                     }
                 }
@@ -365,7 +365,7 @@ Flickable {
 
                     StyledText {
                         anchors.verticalCenter: parent.verticalCenter
-                        text: "Usar as mesmas cores na barra do Uix"
+                        text: "Use the same colors on the Bar X taskbar"
                     }
                     Toggle {
                         anchors.right: parent.right
@@ -380,8 +380,8 @@ Flickable {
         SettingRow {
             width: parent.width
             icon: Icons.cloud
-            title: "Cidade do clima"
-            subtitle: "Usada no widget de clima. Vazio = detectar automaticamente"
+            title: "Weather city"
+            subtitle: "Used by the weather widget. Empty = detect automatically"
 
             Rectangle {
                 width: 220
@@ -412,7 +412,7 @@ Flickable {
                     StyledText {
                         anchors.verticalCenter: parent.verticalCenter
                         visible: cityInput.text === "" && !cityInput.activeFocus
-                        text: "Automático"
+                        text: "Automatic"
                         color: Theme.textMuted
                     }
                 }
@@ -422,8 +422,8 @@ Flickable {
         SettingRow {
             width: parent.width
             icon: Icons.sparkle
-            title: "Animações"
-            subtitle: "Transições suaves na interface"
+            title: "Animations"
+            subtitle: "Smooth transitions in the interface"
 
             Toggle {
                 checked: Config.options.animations
@@ -434,8 +434,8 @@ Flickable {
         SettingRow {
             width: parent.width
             icon: Icons.presets
-            title: "Aplicar preset ao iniciar a sessão"
-            subtitle: "Restaura wallpaper e barra do preset ativo no login"
+            title: "Apply preset on login"
+            subtitle: "Restores the active preset's wallpaper and bar on login"
 
             Toggle {
                 checked: Config.options.applyOnLogin

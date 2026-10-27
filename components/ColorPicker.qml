@@ -1,13 +1,13 @@
 import QtQuick
 import qs.config
 
-// Seletor de cor livre: quadrado de saturacao/brilho, barra de matiz,
-// controles R/G/B e codigo hex. Abra com open(titulo, cor).
+// Free color picker: saturation/brightness square, hue bar,
+// R/G/B controls and hex code. Open it with open(title, color).
 Rectangle {
     id: root
 
-    property string title: "Escolher cor"
-    // Cor atual em HSV (a matiz fica guardada mesmo em cinza)
+    property string title: "Choose color"
+    // Current color in HSV (the hue is kept even on gray)
     property real hue: 0
     property real sat: 1
     property real val: 1
@@ -46,7 +46,7 @@ Rectangle {
     border.width: 1
     border.color: Theme.border
 
-    // Engole cliques para nao fechar ao clicar dentro
+    // Swallow clicks so clicking inside doesn't close it
     MouseArea {
         anchors.fill: parent
     }
@@ -65,7 +65,7 @@ Rectangle {
             font.weight: Font.DemiBold
         }
 
-        // Saturacao (esquerda -> direita) e brilho (cima -> baixo)
+        // Saturation (left -> right) and brightness (top -> bottom)
         Rectangle {
             id: svBox
             width: parent.width
@@ -123,7 +123,7 @@ Rectangle {
             }
         }
 
-        // Matiz
+        // Hue
         Rectangle {
             id: hueBar
             width: parent.width
@@ -245,7 +245,7 @@ Rectangle {
             }
         }
 
-        // Previa + hex + botoes
+        // Preview + hex + buttons
         Row {
             width: parent.width
             spacing: 10
@@ -297,14 +297,14 @@ Rectangle {
             StyledButton {
                 id: cancel
                 anchors.verticalCenter: parent.verticalCenter
-                text: "Cancelar"
+                text: "Cancel"
                 onClicked: root.canceled()
             }
 
             StyledButton {
                 id: ok
                 anchors.verticalCenter: parent.verticalCenter
-                text: "Usar"
+                text: "Use"
                 primary: true
                 onClicked: root.accepted(root.toHex(root.current))
             }

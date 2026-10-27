@@ -5,14 +5,14 @@ import qs.components
 import qs.services
 import qs.bar
 
-// Qual barra usar (Waybar ou a do Uix) e o estilo da barra do preset ativo.
+// Which bar to use (Waybar or the Uix one) and the active preset's bar style.
 Flickable {
     id: root
 
     readonly property var activePreset: Config.preset(Config.options.activePreset)
     readonly property string currentStyle: Config.currentBarStyle()
     readonly property var currentInfo: Ui.barStyle(currentStyle)
-    // Posicao cujas variacoes aparecem embaixo (comeca na posicao em uso)
+    // Position whose variants are shown below (starts on the position in use)
     property string shownPosition: currentInfo ? currentInfo.position : "top"
     readonly property string wallpaperThumb: Wallpapers.thumbFor(activePreset && activePreset.wallpaper ? activePreset.wallpaper : Config.options.wallpaper)
     readonly property string loginLine: "hl.exec_cmd(\"" + System.startBarScript + "\")"
@@ -38,7 +38,7 @@ Flickable {
         spacing: 12
 
         StyledText {
-            text: "Barra em uso"
+            text: "Bar in use"
             font.pixelSize: 15
             font.weight: Font.DemiBold
         }
@@ -51,15 +51,15 @@ Flickable {
                 model: [
                     {
                         "id": "uix",
-                        "title": "Barra do Uix",
-                        "description": "Muda de estilo e cor junto com o preset",
+                        "title": "Bar X taskbar",
+                        "description": "Changes style and color along with the preset",
                         "icon": Icons.sparkle,
                         "running": System.uixBarRunning && Config.options.barProvider === "uix"
                     },
                     {
                         "id": "waybar",
                         "title": "Waybar",
-                        "description": "A sua barra de antes (~/.config/waybar)",
+                        "description": "Your previous bar (~/.config/waybar)",
                         "icon": Icons.bar,
                         "running": System.waybarRunning
                     }
@@ -132,7 +132,7 @@ Flickable {
                                 color: providerCard.modelData.running ? "#8be28b" : Theme.textMuted
                             }
                             StyledText {
-                                text: providerCard.modelData.running ? "Rodando" : "Parada"
+                                text: providerCard.modelData.running ? "Running" : "Stopped"
                                 color: Theme.textDim
                                 font.pixelSize: 12
                             }
@@ -146,7 +146,7 @@ Flickable {
                         cursorShape: Qt.PointingHandCursor
                         onClicked: {
                             System.applyBar(providerCard.modelData.id);
-                            Ui.notify(providerCard.modelData.id === "uix" ? "Barra do Uix ativada" : "Voltando para a Waybar");
+                            Ui.notify(providerCard.modelData.id === "uix" ? "Bar X taskbar enabled" : "Switching back to Waybar");
                         }
                     }
                 }
@@ -155,12 +155,12 @@ Flickable {
 
         StyledText {
             topPadding: 10
-            text: root.activePreset ? "Posição da barra em \"" + root.activePreset.name + "\"" : "Posição da barra"
+            text: root.activePreset ? "Bar position in \"" + root.activePreset.name + "\"" : "Bar position"
             font.pixelSize: 15
             font.weight: Font.DemiBold
         }
 
-        // ---------- Posicao: clique para ver as variacoes ----------
+        // ---------- Position: click to see the variants ----------
         Row {
             width: parent.width
             spacing: 12
@@ -199,7 +199,7 @@ Flickable {
 
                         BarMock {
                             anchors.fill: parent
-                            // Mostra o estilo em uso, se for desta posicao
+                            // Shows the style in use, if it belongs to this position
                             barStyle: posCard.inUse ? root.currentStyle : posCard.modelData.preview
                             unit: posPreview.width / 200
                         }
@@ -231,7 +231,7 @@ Flickable {
                                 StyledText {
                                     id: inUseText
                                     anchors.centerIn: parent
-                                    text: "em uso"
+                                    text: "in use"
                                     color: Theme.accentText
                                     font.pixelSize: 10
                                     font.weight: Font.Bold
@@ -259,7 +259,7 @@ Flickable {
 
         StyledText {
             topPadding: 6
-            text: "Estilos " + (root.shownPosition === "top" ? "da barra em cima" : root.shownPosition === "bottom" ? "da doca embaixo" : "da barra lateral") + " — clique para usar"
+            text: (root.shownPosition === "top" ? "Top bar styles" : root.shownPosition === "bottom" ? "Bottom dock styles" : "Side bar styles") + " — click to use"
             color: Theme.textDim
             font.pixelSize: 13
             font.weight: Font.DemiBold
@@ -359,13 +359,13 @@ Flickable {
         StyledText {
             width: parent.width
             topPadding: 2
-            text: Config.options.barProvider === "uix" ? "A barra do Uix muda na hora quando você troca o estilo ou o preset." : "O estilo vale para a barra do Uix. Ative-a acima para ver na tela."
+            text: Config.options.barProvider === "uix" ? "The Bar X taskbar changes right away when you switch the style or the preset." : "The style applies to the Bar X taskbar. Turn it on above to see it on screen."
             color: Theme.textMuted
             font.pixelSize: 12
             wrapMode: Text.WordWrap
         }
 
-        // ---------- Cor da florzinha / area ativa ----------
+        // ---------- Flower / active workspace color ----------
         Rectangle {
             width: parent.width
             height: flowerColumn.height + 32
@@ -393,7 +393,7 @@ Flickable {
                             size: 30
                             lobes: 8
                             depth: 0.14
-                            color: BarStyle.active // a mesma cor que aparece na barra
+                            color: BarStyle.active // the same color shown on the bar
                         }
                     }
 
@@ -402,10 +402,10 @@ Flickable {
                         spacing: 2
 
                         StyledText {
-                            text: "Cor da florzinha"
+                            text: "Flower color"
                         }
                         StyledText {
-                            text: Config.options.barActiveColor ? "Cor escolhida por você" : "Auto: a cor de destaque; se sumir no fundo (ex.: preto), fica branca"
+                            text: Config.options.barActiveColor ? "Color chosen by you" : "Auto: the accent color; if it disappears on the background (e.g. black), it turns white"
                             color: Theme.textMuted
                             font.pixelSize: 12
                         }
@@ -436,13 +436,13 @@ Flickable {
                     CustomColorButton {
                         current: Config.options.barActiveColor
                         presets: ["#ffffff", "#000000"].concat(Ui.accents)
-                        onClicked: Ui.pickColor("Cor da florzinha", Config.options.barActiveColor || Theme.accent.toString(), hex => Config.options.barActiveColor = hex)
+                        onClicked: Ui.pickColor("Flower color", Config.options.barActiveColor || Theme.accent.toString(), hex => Config.options.barActiveColor = hex)
                     }
                 }
 
                 StyledText {
                     width: parent.width
-                    text: "Vale para a florzinha dos estilos Tonal e para o marcador da área ativa nos outros estilos."
+                    text: "Applies to the flower in the Tonal styles and to the active workspace marker in the other styles."
                     color: Theme.textMuted
                     font.pixelSize: 11
                     wrapMode: Text.WordWrap
@@ -452,7 +452,7 @@ Flickable {
 
         StyledText {
             topPadding: 10
-            text: "Apps na barra"
+            text: "Apps on the bar"
             font.pixelSize: 15
             font.weight: Font.DemiBold
         }
@@ -460,8 +460,8 @@ Flickable {
         SettingRow {
             width: parent.width
             icon: Icons.presets
-            title: "Organizar por área de trabalho"
-            subtitle: "Apps da área 1 primeiro, depois 2, 3... sempre na mesma ordem"
+            title: "Sort by workspace"
+            subtitle: "Apps on workspace 1 first, then 2, 3... always in the same order"
 
             Toggle {
                 checked: Config.options.taskbarSortByWorkspace
@@ -472,8 +472,8 @@ Flickable {
         SettingRow {
             width: parent.width
             icon: Icons.info
-            title: "Número da área nos ícones"
-            subtitle: "Um numerozinho em cima de cada app dizendo em qual área ele está"
+            title: "Workspace number on the icons"
+            subtitle: "A tiny number on each app showing which workspace it is on"
 
             Toggle {
                 checked: Config.options.taskbarWorkspaceBadge
@@ -481,7 +481,7 @@ Flickable {
             }
         }
 
-        // Instrucao para abrir a barra escolhida no login
+        // How to start the chosen bar on login
         Rectangle {
             width: parent.width
             height: loginColumn.height + 32
@@ -497,12 +497,12 @@ Flickable {
                 spacing: 10
 
                 StyledText {
-                    text: "Abrir o Uix ao iniciar a sessão"
+                    text: "Start Bar X on login"
                     font.weight: Font.DemiBold
                 }
                 StyledText {
                     width: parent.width
-                    text: "No ~/.config/hypr/hyprland.lua, troque as linhas hl.exec_cmd(\"waybar\") e hl.exec_cmd(\"linux-wallpaper-engine-ux\") por esta (abre a barra, os widgets e o wallpaper do preset ativo):"
+                    text: "In ~/.config/hypr/hyprland.lua, replace the hl.exec_cmd(\"waybar\") and hl.exec_cmd(\"linux-wallpaper-engine-ux\") lines with this one (starts the bar, the widgets and the active preset's wallpaper):"
                     color: Theme.textMuted
                     font.pixelSize: 12
                     wrapMode: Text.WordWrap
@@ -539,7 +539,7 @@ Flickable {
                         baseColor: "transparent"
                         onClicked: {
                             Quickshell.execDetached(["wl-copy", root.loginLine]);
-                            Ui.notify("Linha copiada");
+                            Ui.notify("Line copied");
                         }
                     }
                 }

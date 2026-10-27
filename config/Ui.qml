@@ -2,103 +2,103 @@ pragma Singleton
 import QtQuick
 import Quickshell
 
-// Estado da interface compartilhado entre as paginas.
+// Interface state shared between pages.
 Singleton {
     property int page: 0
 
-    // Posicoes da barra; cada uma tem os seus estilos (variacoes)
+    // Bar positions; each one has its own styles (variants)
     readonly property var barPositions: [
         {
             "id": "top",
-            "name": "Em cima",
-            "description": "Barra no topo da tela",
+            "name": "Top",
+            "description": "Bar at the top of the screen",
             "preview": "floating"
         },
         {
             "id": "bottom",
-            "name": "Embaixo",
-            "description": "Doca pequena e centralizada",
+            "name": "Bottom",
+            "description": "Small centered dock",
             "preview": "bottom"
         },
         {
             "id": "side",
-            "name": "Lateral",
-            "description": "Barra vertical do lado esquerdo",
+            "name": "Side",
+            "description": "Vertical bar on the left side",
             "preview": "side"
         }
     ]
 
-    // Estilos de barra. id e o que fica salvo no preset ("bar").
+    // Bar styles. id is what gets saved in the preset ("bar").
     readonly property var barStyles: [
         {
             "id": "floating",
             "position": "top",
-            "name": "Flutuante",
-            "fullName": "Flutuante",
-            "description": "Barra inteira com cantos arredondados e margem da borda"
+            "name": "Floating",
+            "fullName": "Floating",
+            "description": "Full bar with rounded corners and a gap from the edge"
         },
         {
             "id": "island",
             "position": "top",
-            "name": "Ilhas",
-            "fullName": "Ilhas",
-            "description": "Módulos separados em pílulas: esquerda, centro e direita"
+            "name": "Islands",
+            "fullName": "Islands",
+            "description": "Modules split into pills: left, center and right"
         },
         {
             "id": "minimal",
             "position": "top",
-            "name": "Minimalista",
-            "fullName": "Minimalista",
-            "description": "Barra fina colada na borda, só o essencial"
+            "name": "Minimal",
+            "fullName": "Minimal",
+            "description": "Thin bar against the edge, just the essentials"
         },
         {
             "id": "tonal",
             "position": "top",
             "name": "Tonal",
             "fullName": "Tonal",
-            "description": "Ilhas tingidas com a cor do tema e área ativa em florzinha"
+            "description": "Islands tinted with the theme color and a flower on the active workspace"
         },
         {
             "id": "bottom",
             "position": "bottom",
-            "name": "Doca",
-            "fullName": "Doca",
-            "description": "Pequena e centralizada na parte de baixo da tela"
+            "name": "Dock",
+            "fullName": "Dock",
+            "description": "Small and centered at the bottom of the screen"
         },
         {
             "id": "bottom-tonal",
             "position": "bottom",
-            "name": "Doca tonal",
-            "fullName": "Doca tonal",
-            "description": "A doca tingida com a cor do tema e área ativa em florzinha"
+            "name": "Tonal dock",
+            "fullName": "Tonal dock",
+            "description": "The dock tinted with the theme color and a flower on the active workspace"
         },
         {
             "id": "side",
             "position": "side",
-            "name": "Inteira",
-            "fullName": "Lateral",
-            "description": "Uma barra só, de cima a baixo, com cantos arredondados"
+            "name": "Full",
+            "fullName": "Side",
+            "description": "A single bar, top to bottom, with rounded corners"
         },
         {
             "id": "side-island",
             "position": "side",
-            "name": "Ilhas",
-            "fullName": "Lateral em ilhas",
-            "description": "Três pílulas separadas: em cima, no meio e embaixo"
+            "name": "Islands",
+            "fullName": "Side islands",
+            "description": "Three separate pills: top, middle and bottom"
         },
         {
             "id": "side-minimal",
             "position": "side",
-            "name": "Minimalista",
-            "fullName": "Lateral minimalista",
-            "description": "Fina e colada na borda, só workspaces, relógio e bandeja"
+            "name": "Minimal",
+            "fullName": "Side minimal",
+            "description": "Thin and against the edge, only workspaces, clock and tray"
         },
         {
             "id": "side-tonal",
             "position": "side",
             "name": "Tonal",
-            "fullName": "Lateral tonal",
-            "description": "Ilhas tingidas com a cor do tema e área ativa em florzinha"
+            "fullName": "Side tonal",
+            "description": "Islands tinted with the theme color and a flower on the active workspace"
         }
     ]
 
@@ -106,66 +106,66 @@ Singleton {
         return barStyles.find(b => b.id === id) ?? null;
     }
 
-    // Tamanho da tela real: as posicoes dos widgets sao relativas a ela
+    // Real screen size: widget positions are relative to it
     // Primary monitor (widgets live there); falls back to the first connected one
     readonly property var screen: Quickshell.screens.find(s => s.name === Config.options.primaryMonitor) ?? (Quickshell.screens.length > 0 ? Quickshell.screens[0] : null)
     readonly property real screenWidth: screen ? screen.width : 1920
     readonly property real screenHeight: screen ? screen.height : 1080
 
-    // Tipos de widget. w/h = tamanho em pixels na tela real.
+    // Widget types. w/h = size in pixels on the real screen.
     readonly property var widgetTypes: [
         {
             "id": "clock",
-            "name": "Relógio",
-            "description": "Hora grande e data",
+            "name": "Clock",
+            "description": "Big time and date",
             "icon": Icons.clock,
             "w": 340,
             "h": 170
         },
         {
             "id": "calendar",
-            "name": "Calendário",
-            "description": "Mês atual com o dia de hoje",
+            "name": "Calendar",
+            "description": "Current month with today highlighted",
             "icon": Icons.calendar,
             "w": 330,
             "h": 330
         },
         {
             "id": "media",
-            "name": "Música",
-            "description": "Spotify e outros players (MPRIS)",
+            "name": "Music",
+            "description": "Spotify and other players (MPRIS)",
             "icon": Icons.music,
             "w": 460,
             "h": 160
         },
         {
             "id": "weather",
-            "name": "Clima",
-            "description": "Temperatura e condição do tempo",
+            "name": "Weather",
+            "description": "Temperature and conditions",
             "icon": Icons.cloud,
             "w": 380,
             "h": 160
         },
         {
             "id": "system",
-            "name": "Sistema",
-            "description": "Uso de CPU, RAM e disco",
+            "name": "System",
+            "description": "CPU, RAM and disk usage",
             "icon": Icons.chip,
             "w": 420,
             "h": 140
         },
         {
             "id": "mediaFlower",
-            "name": "Música · Flor",
-            "description": "Capa redonda e play em florzinha",
+            "name": "Music · Flower",
+            "description": "Round cover and a flower play button",
             "icon": Icons.music,
             "w": 440,
             "h": 150
         },
         {
             "id": "clockStacked",
-            "name": "Relógio grande",
-            "description": "Hora e minuto empilhados, sem fundo",
+            "name": "Big clock",
+            "description": "Stacked hour and minutes, no background",
             "icon": Icons.clock,
             "w": 250,
             "h": 300,
@@ -173,39 +173,39 @@ Singleton {
         },
         {
             "id": "statTiles",
-            "name": "Sistema · Blocos",
-            "description": "CPU, RAM e disco em blocos separados",
+            "name": "System · Tiles",
+            "description": "CPU, RAM and disk in separate tiles",
             "icon": Icons.memory,
             "w": 420,
             "h": 140
         },
         {
             "id": "weekStrip",
-            "name": "Semana",
-            "description": "Calendário só da semana atual",
+            "name": "Week",
+            "description": "Calendar of the current week only",
             "icon": Icons.calendar,
             "w": 360,
             "h": 130
         },
         {
             "id": "profile",
-            "name": "Perfil",
-            "description": "Sua foto, tempo ligado e atalhos",
+            "name": "Profile",
+            "description": "Your photo, uptime and shortcuts",
             "icon": Icons.person2,
             "w": 330,
             "h": 190
         },
         {
             "id": "weatherFlower",
-            "name": "Clima · Flor",
-            "description": "Temperatura com ícone em florzinha",
+            "name": "Weather · Flower",
+            "description": "Temperature with the icon in a flower",
             "icon": Icons.cloud,
             "w": 360,
             "h": 130
         }
     ]
 
-    // Fundo padrao de um tipo de widget (alguns, como o relogio grande, nao tem fundo)
+    // Default background of a widget type (some, like the big clock, have none)
     function defaultBg(type) {
         const t = widgetType(type);
         return t && t.bg !== undefined ? t.bg : 0.89;
@@ -219,10 +219,10 @@ Singleton {
 
     signal toast(string message)
 
-    // Pedido aberto do seletor de cor: { title, color, callback } (ou null)
+    // Open color picker request: { title, color, callback } (or null)
     property var colorRequest: null
 
-    // Abre o seletor de cor livre; callback(hex) e chamado ao confirmar
+    // Opens the free color picker; callback(hex) is called on confirm
     function pickColor(title, initial, callback) {
         colorRequest = {
             "title": title,

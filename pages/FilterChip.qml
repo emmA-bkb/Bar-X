@@ -2,7 +2,7 @@ import QtQuick
 import qs.config
 import qs.components
 
-// Chip de filtro (ordem / tipo) da Comunidade.
+// Community filter chip (sort / type).
 Rectangle {
     id: chip
     property string label

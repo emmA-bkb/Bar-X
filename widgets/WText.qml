@@ -1,8 +1,8 @@
 import QtQuick
 import qs.config
 
-// Texto dos widgets. QtRendering para continuar nitido quando o widget e redimensionado.
-// A cor padrao vem do cartao do widget (paleta manual ou do wallpaper).
+// Widget text. QtRendering so it stays sharp when the widget is resized.
+// The default color comes from the widget card (manual palette or wallpaper).
 Text {
     readonly property Item card: {
         let p = parent;

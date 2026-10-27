@@ -1,7 +1,7 @@
 import QtQuick
 
-// Enfileira itens na horizontal ou, na barra lateral, na vertical.
-// (-1 = deixa o Grid calcular: 1 coluna na vertical, 1 linha na horizontal)
+// Lays items out horizontally or, on the side bar, vertically.
+// (-1 = let the Grid decide: 1 column when vertical, 1 row when horizontal)
 Grid {
     property bool vertical: BarStyle.vertical
 

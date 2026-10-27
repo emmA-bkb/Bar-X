@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Tira as cores de uma imagem para os widgets (no estilo Material You).
+"""Takes the colors of an image for the widgets (Material You style).
 
-Reduz a imagem com ffmpeg, acha a cor (matiz) mais marcante e monta uma paleta:
-destaque, fundo escuro tingido e textos.
+Shrinks the image with ffmpeg, finds the most striking color (hue) and builds a palette:
+accent, tinted dark background and text colors.
 
-Uso: palette.py <imagem>
-Saida (JSON): { "accent", "bg", "fg", "fgDim", "fgMuted", "onAccent", "lum" } ou { "error": "..." }
+Usage: palette.py <image>
+Output (JSON): { "accent", "bg", "fg", "fgDim", "fgMuted", "onAccent", "lum" } or { "error": "..." }
 """
 import colorsys
 import json
@@ -33,14 +33,14 @@ def hexcolor(h, s, v):
 
 def main():
     bins = [0.0] * 36
-    vec = [[0.0, 0.0] for _ in range(36)]  # media circular da matiz em cada faixa
+    vec = [[0.0, 0.0] for _ in range(36)]  # circular mean of the hue in each band
     sat_sum = weight_sum = 0.0
     lum_sum = count = 0.0
     for r, g, b in pixels(sys.argv[1]):
         h, s, v = colorsys.rgb_to_hsv(r, g, b)
         lum_sum += 0.2126 * r + 0.7152 * g + 0.0722 * b
         count += 1
-        # Cores vivas e nao muito escuras pesam mais
+        # Vivid and not too dark colors weigh more
         w = s * s * v + 0.002
         k = int(h * 36) % 36
         bins[k] += w
@@ -49,13 +49,13 @@ def main():
         sat_sum += s * w
         weight_sum += w
 
-    # Faixa mais forte, somando as vizinhas para nao pegar um pico isolado
+    # Strongest band, adding its neighbours so an isolated peak isn't picked
     best = max(range(36), key=lambda k: bins[k - 1] + bins[k] * 2 + bins[(k + 1) % 36])
     x = sum(vec[(best + d) % 36][0] for d in (-1, 0, 1))
     y = sum(vec[(best + d) % 36][1] for d in (-1, 0, 1))
     hue = (math.atan2(y, x) / (2 * math.pi)) % 1
     sat = sat_sum / weight_sum if weight_sum else 0
-    gray = sat < 0.12  # wallpaper quase sem cor
+    gray = sat < 0.12  # wallpaper with almost no color
 
     s_accent = 0.12 if gray else min(0.62, max(0.42, sat))
     s_tint = 0.06 if gray else 0.38
@@ -67,7 +67,7 @@ def main():
         "fgDim": hexcolor(hue, 0.14 if not gray else 0.04, 0.78),
         "fgMuted": hexcolor(hue, 0.18 if not gray else 0.04, 0.58),
         "onAccent": hexcolor(hue, 0.7 if not gray else 0.1, 0.16),
-        "lum": round(lum_sum / count, 3) if count else 0,  # brilho medio (0 escuro .. 1 claro)
+        "lum": round(lum_sum / count, 3) if count else 0,  # average brightness (0 dark .. 1 light)
     }))
 
 

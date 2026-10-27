@@ -1,7 +1,7 @@
 import QtQuick
 import qs.config
 
-// Linha vertical para separar grupos de controles.
+// Vertical line to separate groups of controls.
 Rectangle {
     anchors.verticalCenter: parent ? parent.verticalCenter : undefined
     width: 1

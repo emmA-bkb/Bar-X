@@ -3,7 +3,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 
-// Configuracao persistente em ~/.config/uix/config.json
+// Persistent settings in ~/.config/uix/config.json
 Singleton {
     id: root
 
@@ -36,13 +36,13 @@ Singleton {
         options.presets = options.presets.map(p => p.id === id ? Object.assign({}, p, patch) : p);
     }
 
-    // ---------- Layouts de widgets ----------
+    // ---------- Widget layouts ----------
 
     function layout(id) {
         return options.widgetLayouts.find(l => l.id === id) ?? null;
     }
 
-    // Layout mostrado para um preset (sem layout proprio, usa o ativo)
+    // Layout shown for a preset (without its own layout it uses the active one)
     function layoutFor(p) {
         return (p && p.widgets ? layout(p.widgets) : null) ?? layout(options.activeLayout);
     }
@@ -107,12 +107,12 @@ Singleton {
         });
     }
 
-    // patch: qualquer campo do widget (x, y, scale, bgOpacity...)
+    // patch: any widget field (x, y, scale, bgOpacity...)
     function updateWidget(layoutId, uid, patch) {
         editWidgets(layoutId, ws => ws.map(w => w.uid === uid ? Object.assign({}, w, patch) : w));
     }
 
-    // Copia um widget (mesmo tamanho e fundo) na posicao indicada
+    // Copies a widget (same size and background) to the given position
     function duplicateWidget(layoutId, uid, x, y) {
         const l = layout(layoutId);
         const w = l ? l.widgets.find(i => i.uid === uid) : null;
@@ -159,7 +159,40 @@ Singleton {
         return monitorSettings(name).wallpaper || options.wallpaper;
     }
 
-    // Transparencia (efeito vidro) da barra e dos widgets: a do preset ativo, ou a geral
+    // Primary monitor name: the saved one, or the first connected monitor (same rule as Ui.screen)
+    function primaryName() {
+        return options.primaryMonitor || (Quickshell.screens.length > 0 ? Quickshell.screens[0].name : "");
+    }
+
+    // Own wallpapers of the other monitors right now: { "<output>": "<path>" | "" }, "" = the main one
+    function currentMonitorWallpapers() {
+        const out = {};
+        for (const s of Quickshell.screens)
+            if (s.name !== primaryName())
+                out[s.name] = monitorSettings(s.name).wallpaper || "";
+        return out;
+    }
+
+    // Wallpaper a preset puts on a non-primary monitor. Presets saved before they stored
+    // monitor wallpapers leave that monitor as it is.
+    function presetMonitorWallpaper(p, name) {
+        const saved = p && p.monitorWallpapers ? p.monitorWallpapers[name] : undefined;
+        if (saved !== undefined)
+            return saved || p.wallpaper || options.wallpaper;
+        return monitorSettings(name).wallpaper || (p && p.wallpaper) || options.wallpaper;
+    }
+
+    // Keeps the active preset in sync with the wallpapers on screen
+    function saveWallpapersToPreset() {
+        if (!preset(options.activePreset))
+            return;
+        updatePreset(options.activePreset, {
+            "wallpaper": options.wallpaper,
+            "monitorWallpapers": currentMonitorWallpapers()
+        });
+    }
+
+    // Transparency (glass effect) of the bar and widgets: the active preset's, or the global one
     function transparencyFor(p) {
         return p && p.transparency !== undefined ? p.transparency : options.transparency;
     }
@@ -177,14 +210,14 @@ Singleton {
             options.transparency = v;
     }
 
-    // Estilo de barra em uso: o do preset ativo, ou o padrao
+    // Bar style in use: the active preset's, or the default
     function currentBarStyle() {
         const p = preset(options.activePreset);
         return p && p.bar ? p.bar : options.barStyle;
     }
 
-    // Atualiza o estado salvo. A barra do Uix acompanha sozinha (ela le este arquivo);
-    // o wallpaper e aplicado por quem chama (ver PresetCard).
+    // Updates the saved state. The Uix bar follows on its own (it reads this file);
+    // the wallpaper is applied by the caller (see PresetCard).
     function applyPreset(id) {
         const p = preset(id);
         if (!p)
@@ -193,6 +226,15 @@ Singleton {
         options.accent = p.accent;
         if (p.wallpaper)
             options.wallpaper = p.wallpaper;
+        if (p.monitorWallpapers) {
+            const all = Object.assign({}, options.monitors);
+            for (const name in p.monitorWallpapers)
+                if (name !== primaryName())
+                    all[name] = Object.assign({}, all[name] ?? {}, {
+                        "wallpaper": p.monitorWallpapers[name]
+                    });
+            options.monitors = all;
+        }
         if (p.widgets && layout(p.widgets))
             options.activeLayout = p.widgets;
     }
@@ -222,35 +264,35 @@ Singleton {
             property bool applyOnLogin: true
             property bool restoreBar: true
 
-            // Barra de tarefas: "waybar" (a sua atual) ou "uix" (barras do Uix)
+            // Taskbar: "waybar" (your current one) or "uix" (Uix bars)
             property string barProvider: "waybar"
-            property string barStyle: "floating" // usado quando nenhum preset esta ativo
+            property string barStyle: "floating" // used when no preset is active
             property string launcherCommand: "" // empty = UIX_LAUNCHER from .env
 
-            // Apps na barra: ordenados pela area de trabalho, com o numero dela no icone
+            // Apps on the bar: ordered by workspace, with its number on the icon
             property bool taskbarSortByWorkspace: true
             property bool taskbarWorkspaceBadge: true
 
-            // Widgets na area de trabalho (layout ativo)
+            // Widgets on the desktop (active layout)
             property bool widgetsEnabled: false
-            property string weatherCity: "" // vazio = detectar pela internet
+            property string weatherCity: "" // empty = detect from the internet
 
-            // Cores dos widgets: "manual" (abaixo) ou "wallpaper" (tiradas do wallpaper)
+            // Widget colors: "manual" (below) or "wallpaper" (taken from the wallpaper)
             property string widgetColorMode: "manual"
-            property string widgetAccent: "" // vazio = cor de destaque do preset
+            property string widgetAccent: "" // empty = the preset's accent color
             property string widgetBackground: "#131618"
-            property bool dynamicBarColors: false // a barra tambem usa as cores dos widgets
-            property string barActiveColor: "" // cor da florzinha / area ativa; vazio = automatico
+            property bool dynamicBarColors: false // the bar uses the widget colors too
+            property string barActiveColor: "" // flower / active workspace color; empty = automatic
             property var monitors: ({}) // per-monitor settings, see monitorSettings()
             property string primaryMonitor: "" // empty = the first connected monitor
-            property real transparency: 0 // barra e widgets transparentes (0..1), quando nenhum preset esta ativo
+            property real transparency: 0 // transparent bar and widgets (0..1), when no preset is active
             property string activeLayout: "padrao"
 
-            // Posicoes x/y sao fracoes da tela (0..1), canto superior esquerdo do widget
+            // x/y positions are fractions of the screen (0..1), top-left corner of the widget
             property var widgetLayouts: [
                 {
                     "id": "padrao",
-                    "name": "Padrão",
+                    "name": "Default",
                     "widgets": [
                         { "uid": "clock1", "type": "clock", "x": 0.78, "y": 0.09 },
                         { "uid": "cal1", "type": "calendar", "x": 0.0125, "y": 0.09 },
@@ -267,7 +309,7 @@ Singleton {
                 },
                 {
                     "id": "trabalho",
-                    "name": "Trabalho",
+                    "name": "Work",
                     "widgets": [
                         { "uid": "sys3", "type": "system", "x": 0.7725, "y": 0.09 },
                         { "uid": "cal3", "type": "calendar", "x": 0.815, "y": 0.24 },
@@ -296,7 +338,7 @@ Singleton {
                 },
                 {
                     "id": "meia-noite",
-                    "name": "Meia-noite",
+                    "name": "Midnight",
                     "bar": "minimal",
                     "widgets": "minimal",
                     "accent": "#a7b0ff",

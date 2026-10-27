@@ -3,7 +3,7 @@ import qs.config
 import qs.components
 import qs.services
 
-// Clima atual (wttr.in). A cidade pode ser escolhida em Aparencia; vazio = automatico.
+// Current weather (wttr.in). The city can be chosen in Appearance; empty = automatic.
 WidgetCard {
     id: root
 

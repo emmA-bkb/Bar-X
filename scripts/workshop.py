@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-"""Busca wallpapers da Steam Workshop do Wallpaper Engine (app 431960).
+"""Fetches wallpapers from Wallpaper Engine's Steam Workshop (app 431960).
 
-Usa so paginas e APIs publicas (sem login nem chave):
-  1. a pagina de navegacao da Workshop, para a lista de itens na ordem escolhida
-  2. ISteamRemoteStorage/GetPublishedFileDetails, para titulo, previa, tags etc.
+Uses only public pages and APIs (no login or key):
+  1. the Workshop browse page, for the list of items in the chosen order
+  2. ISteamRemoteStorage/GetPublishedFileDetails, for title, preview, tags etc.
 
-Uso: workshop.py <sort> <page> [type] [query]
+Usage: workshop.py <sort> <page> [type] [query]
   sort: trend | mostrecent | toprated | subscribed
   type: "" | Scene | Video | Web
-Saida (JSON): { "page": N, "hasMore": bool, "items": [...] } ou { "error": "..." }
+Output (JSON): { "page": N, "hasMore": bool, "items": [...] } or { "error": "..." }
 """
 import json
 import re
@@ -42,7 +42,7 @@ def browse_ids(sort, page, kind, query):
         ("actualsort", SORTS.get(sort, "trend")),
         ("p", str(page)),
         ("numperpage", str(PER_PAGE)),
-        ("requiredtags[]", "Everyone"),  # so classificacao livre
+        ("requiredtags[]", "Everyone"),  # free-form sorting only
     ]
     if sort == "trend":
         params.append(("days", "7"))
@@ -72,7 +72,7 @@ def details(ids):
     by_id = {f.get("publishedfileid"): f for f in files if f.get("result") == 1}
 
     items = []
-    for pid in ids:  # mantem a ordem da Workshop
+    for pid in ids:  # keeps the Workshop order
         f = by_id.get(pid)
         if not f:
             continue
@@ -99,7 +99,7 @@ def main():
         ids = browse_ids(sort, page, kind, query)
         items = details(ids)
         print(json.dumps({"page": page, "hasMore": len(ids) >= PER_PAGE, "items": items}, ensure_ascii=False))
-    except Exception as e:  # sem internet, Steam fora do ar etc.
+    except Exception as e:  # no internet, Steam down, etc.
         print(json.dumps({"error": str(e)}))
 
 

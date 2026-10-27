@@ -86,7 +86,7 @@ Rectangle {
                     StyledText {
                         anchors.verticalCenter: parent.verticalCenter
                         visible: search.text === ""
-                        text: "Buscar wallpaper"
+                        text: "Search wallpapers"
                         color: Theme.textMuted
                     }
                 }

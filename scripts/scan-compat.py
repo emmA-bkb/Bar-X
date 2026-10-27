@@ -1,19 +1,19 @@
 #!/usr/bin/env python3
-"""Testa se os wallpapers do Wallpaper Engine funcionam no Linux.
+"""Tests whether Wallpaper Engine wallpapers work on Linux.
 
-Mesmo teste do linux-wallpaper-engine-ux: abre cada wallpaper no linux-wallpaperengine
-numa janelinha de 1x1, espera 5 segundos e le as mensagens de erro.
-  broken  -> travou, erro grave, ou fechou sozinho
-  minor   -> avisos (textura/shader faltando, recurso nao suportado...)
-  perfect -> nenhum aviso
-No Hyprland as janelas de teste abrem numa area especial escondida (special:uixscan),
-entao nada aparece na sua tela.
+Same test as linux-wallpaper-engine-ux: opens each wallpaper in linux-wallpaperengine
+in a tiny 1x1 window, waits 5 seconds and reads the error messages.
+  broken  -> froze, fatal error, or closed by itself
+  minor   -> warnings (missing texture/shader, unsupported feature...)
+  perfect -> no warnings
+On Hyprland the test windows open in a hidden special workspace (special:uixscan),
+so nothing shows up on your screen.
 
-Resultados em ~/.config/uix/compat.json (o scan-wallpaper-engine.py usa eles nos selos).
+Results go to ~/.config/uix/compat.json (scan-wallpaper-engine.py uses them for the badges).
 
-Uso: scan-compat.py <new|all>
-  new -> so os que ainda nao tem resultado    all -> todos de novo
-Saida, uma linha por evento (TAB): total N | start titulo | result caminho status titulo | done perfect minor broken
+Usage: scan-compat.py <new|all>
+  new -> only the ones without a result yet    all -> all of them again
+Output, one line per event (TAB): total N | start title | result path status title | done perfect minor broken
 """
 import json
 import os
@@ -30,7 +30,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 COMPAT_FILE = os.path.expanduser("~/.config/uix/compat.json")
-WAIT = 5  # segundos rodando antes de decidir
+WAIT = 5  # seconds running before deciding
 PARALLEL = 3
 
 FATAL = [re.compile(p, re.I) for p in (
@@ -77,8 +77,8 @@ def engine_cmd(path):
     return ["linux-wallpaperengine", "--window", "0x0x1x1", "--silent", path]
 
 
-# O /usr/bin/linux-wallpaperengine e um script que roda "./linux-wallpaperengine", entao o
-# padrao nao comeca com ^. O $ no fim evita pegar o "sh -c ..." que envolve o processo.
+# /usr/bin/linux-wallpaperengine is a script that runs "./linux-wallpaperengine", so the
+# pattern doesn't start with ^. The $ at the end avoids matching the "sh -c ..." wrapping the process.
 def kill_engine(path):
     pattern = re.escape(shlex.join(engine_cmd(path))) + "$"
     subprocess.run(["pkill", "-9", "-f", pattern], capture_output=True)
@@ -141,7 +141,7 @@ def main():
     signal.signal(signal.SIGINT, stop)
 
     if not shutil.which("linux-wallpaperengine"):
-        emit("error", "linux-wallpaperengine não está instalado")
+        emit("error", "linux-wallpaperengine is not installed")
         return
 
     todo = [w for w in wallpapers() if mode == "all" or not w["compat"]]

@@ -1,8 +1,8 @@
 import QtQuick
 import qs.config
 
-// Bolinha arco-iris que abre o seletor de cor livre.
-// Se a cor atual nao for uma das bolinhas prontas (presets), mostra a cor escolhida com um check.
+// Rainbow dot that opens the free color picker.
+// If the current color isn't one of the ready-made dots (presets), shows the chosen color with a check.
 Rectangle {
     id: root
 

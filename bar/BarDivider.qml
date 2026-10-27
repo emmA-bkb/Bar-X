@@ -1,6 +1,6 @@
 import QtQuick
 
-// Separador fininho entre grupos (horizontal ou vertical).
+// Thin separator between groups (horizontal or vertical).
 Rectangle {
     width: BarStyle.vertical ? 16 : 1
     height: BarStyle.vertical ? 1 : 16

@@ -1,7 +1,7 @@
 import QtQuick
 import qs.config
 
-// Botao com icone e texto. primary = preenchido com a cor de destaque.
+// Button with icon and text. primary = filled with the accent color.
 Rectangle {
     id: root
 

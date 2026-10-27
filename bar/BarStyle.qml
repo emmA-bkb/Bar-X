@@ -4,31 +4,31 @@ import Quickshell
 import qs.config
 import qs.services
 
-// Medidas e cores da barra, conforme o estilo do preset ativo.
-//   floating / island / minimal / tonal -> em cima
-//   bottom -> doca pequena centralizada embaixo
-//   side   -> vertical no lado esquerdo
+// Bar sizes and colors, based on the active preset's style.
+//   floating / island / minimal / tonal -> top
+//   bottom -> small dock centered at the bottom
+//   side   -> vertical on the left side
 Singleton {
-    // UIX_BAR_STYLE forca um estilo (para testes)
+    // UIX_BAR_STYLE forces a style (for testing)
     readonly property string style: Quickshell.env("UIX_BAR_STYLE") || Config.currentBarStyle()
-    // Posicao: "bottom..." = embaixo, "side..." = lateral, o resto = em cima
+    // Position: "bottom..." = bottom, "side..." = side, anything else = top
     readonly property string kind: style.startsWith("bottom") ? "bottom" : style.startsWith("side") ? "side" : "top"
     readonly property bool vertical: kind === "side"
     readonly property bool minimal: style === "minimal" || style === "side-minimal"
     readonly property bool tonal: style === "tonal" || style.endsWith("-tonal")
-    // Ilhas = grupos em pilulas separadas (na doca e sempre uma pilula so)
+    // Islands = groups in separate pills (the dock is always a single pill)
     readonly property bool island: style === "island" || style === "side-island" || (tonal && kind !== "bottom")
 
-    // Espessura da barra (altura; largura na lateral)
+    // Bar thickness (height; width on the side bar)
     readonly property int thickness: minimal ? (vertical ? 36 : 30) : kind === "bottom" ? 50 : kind === "side" ? 46 : 40
     readonly property int height: thickness
-    readonly property int gap: minimal ? 0 : kind === "bottom" ? 8 : 6 // distancia da borda da tela
+    readonly property int gap: minimal ? 0 : kind === "bottom" ? 8 : 6 // distance from the screen edge
     readonly property int sideMargin: minimal ? 0 : 10
     readonly property int itemHeight: minimal ? 20 : kind === "bottom" ? 36 : 28
 
-    // Cores: as do app, ou as dos widgets (manual/wallpaper) se "dynamicBarColors" estiver ligado
+    // Colors: the app's, or the widgets' (manual/wallpaper) if "dynamicBarColors" is on
     readonly property var colors: Config.options.dynamicBarColors ? Colors.current : null
-    // Efeito vidro (transparencia do preset ativo) e texto escuro em wallpaper claro
+    // Glass effect (active preset's transparency) and dark text on a light wallpaper
     readonly property real glass: Config.currentTransparency()
     readonly property bool darkText: Colors.glassText(glass, Wallpapers.thumbFor(Config.options.wallpaper))
 
@@ -43,15 +43,15 @@ Singleton {
         const c = tonal ? Qt.tint(base, Qt.rgba(accent.r, accent.g, accent.b, 0.22)) : base;
         return Qt.rgba(c.r, c.g, c.b, (minimal ? 0.95 : 0.9) * (1 - glass * 0.85));
     }
-    // No vidro a borda fica um pouco mais clara, como um reflexo
+    // On glass the border is a bit lighter, like a reflection
     readonly property color border: tonal ? Qt.rgba(accent.r, accent.g, accent.b, 0.25) : glass > 0 ? Qt.rgba(1, 1, 1, 0.22) : "#1fffffff"
 
     function luminance(c) {
         return 0.2126 * c.r + 0.7152 * c.g + 0.0722 * c.b;
     }
 
-    // Cor da florzinha (Tonal) e da area ativa. Automatico: a cor de destaque, mas se ela
-    // sumir no fundo da barra (ex.: preto no escuro) vira branca (ou preta num fundo claro).
+    // Color of the flower (Tonal) and the active workspace. Automatic: the accent color, but if it
+    // disappears against the bar background (e.g. black on dark) it turns white (or black on a light background).
     readonly property color active: {
         if (Config.options.barActiveColor)
             return Config.options.barActiveColor;
@@ -60,6 +60,6 @@ Singleton {
             return accent;
         return bgLum < 0.5 ? "#ffffff" : "#000000";
     }
-    // Texto em cima da florzinha
+    // Text on top of the flower
     readonly property color onActive: luminance(active) > 0.55 ? "#14201e" : "#f4f6f7"
 }

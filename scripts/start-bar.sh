@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Para usar no login (no lugar de "waybar"): abre a barra e os widgets escolhidos no Uix.
+# For use on login (instead of "waybar"): opens the bar and widgets chosen in Uix.
 dir="$(cd "$(dirname "$(readlink -f "$0")")/.." && pwd)"
 config="$HOME/.config/uix/config.json"
 

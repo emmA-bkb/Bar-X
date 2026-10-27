@@ -38,7 +38,7 @@ WidgetCard {
 
         WText {
             anchors.horizontalCenter: parent.horizontalCenter
-            text: Qt.locale("pt_BR").toString(clock.date, "dddd, d 'de' MMMM")
+            text: Qt.locale("en_US").toString(clock.date, "dddd, MMMM d")
             color: root.fgDim
             font.pixelSize: 20
         }

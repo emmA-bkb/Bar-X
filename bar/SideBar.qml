@@ -3,11 +3,11 @@ import Quickshell
 import Quickshell.Hyprland
 import qs.config
 
-// Barra lateral (esquerda), de cima a baixo. Variacoes:
-//   side         -> uma barra inteira arredondada
-//   side-island  -> tres pilulas separadas (em cima, meio, embaixo)
-//   side-tonal   -> pilulas tingidas com a cor do tema
-//   side-minimal -> fina, colada na borda, so o essencial
+// Side bar (left), top to bottom. Variants:
+//   side         -> one full rounded bar
+//   side-island  -> three separate pills (top, middle, bottom)
+//   side-tonal   -> pills tinted with the theme color
+//   side-minimal -> thin, against the edge, only the essentials
 BarWindow {
     id: bar
 
@@ -19,7 +19,7 @@ BarWindow {
 
     implicitWidth: BarStyle.thickness + BarStyle.gap * 2
 
-    // Area da barra (o fundo inteiro aparece so na Inteira e na Minimalista)
+    // Bar area (the full background only shows on Full and Minimal)
     Rectangle {
         id: background
         x: BarStyle.gap
@@ -31,7 +31,7 @@ BarWindow {
         border.width: BarStyle.island || BarStyle.minimal ? 0 : 1
         border.color: BarStyle.border
 
-        // Minimalista: so uma linha na borda direita
+        // Minimal: just a line on the right edge
         Rectangle {
             visible: BarStyle.minimal
             anchors.right: parent.right

@@ -3,7 +3,7 @@ import qs.config
 import qs.components
 import qs.services
 
-// Galeria de wallpapers: Wallpaper Engine (Steam Workshop) e pasta local.
+// Wallpaper gallery: Wallpaper Engine (Steam Workshop) and local folder.
 Item {
     id: root
 
@@ -15,14 +15,14 @@ Item {
 
     readonly property bool community: tab === "community"
     readonly property var source: tab === "we" ? Wallpapers.engineItems : tab === "local" ? Wallpapers.items : Workshop.items
-    // Na Comunidade a busca e feita na propria Workshop
+    // On the Community tab the search runs on the Workshop itself
     readonly property var filtered: {
         const q = query.trim().toLowerCase();
         return q === "" || community ? source : source.filter(i => i.name.toLowerCase().includes(q));
     }
     readonly property var selectedItem: community ? (Workshop.items.find(i => i.id === communityId) ?? null) : selectedPath ? Wallpapers.find(selectedPath) : null
 
-    // Comunidade: item escolhido e o que ja esta instalado (baixado pela Steam)
+    // Community: chosen item and whether it's already installed (downloaded by Steam)
     property string communityId: ""
     readonly property var installedIds: Wallpapers.engineItems.map(i => i.path.split("/").pop())
 
@@ -31,8 +31,8 @@ Item {
         return item ? item.path : "";
     }
 
-    // A busca da Comunidade fica guardada no servico (que continua vivo ao trocar de pagina),
-    // mas a caixa de busca volta vazia. Ao abrir a aba, a Comunidade segue o que esta na caixa.
+    // The Community search is kept in the service (which stays alive across pages),
+    // but the search box comes back empty. When the tab opens, Community follows what's in the box.
     onTabChanged: {
         // Check `tab` directly: the `community` binding may not be updated yet inside this handler
         if (tab !== "community")
@@ -55,15 +55,15 @@ Item {
     readonly property var compatInfo: ({
             "perfect": {
                 "color": "#8be28b",
-                "label": "Funciona perfeitamente"
+                "label": "Works perfectly"
             },
             "minor": {
                 "color": "#f6d58b",
-                "label": "Pequenos problemas"
+                "label": "Minor issues"
             },
             "broken": {
                 "color": "#ff7b7b",
-                "label": "Não funciona no Linux"
+                "label": "Doesn't work on Linux"
             }
         })
 
@@ -79,15 +79,15 @@ Item {
 
     function typeLabel(item) {
         return ({
-                "scene": "Cena",
-                "video": "Vídeo",
+                "scene": "Scene",
+                "video": "Video",
                 "web": "Web",
                 "application": "App",
-                "image": "Imagem"
+                "image": "Image"
             })[item.type] ?? item.type;
     }
 
-    // ---------- Abas + busca ----------
+    // ---------- Tabs + search ----------
     Item {
         id: top
         anchors.left: parent.left
@@ -117,12 +117,12 @@ Item {
                         },
                         {
                             "id": "local",
-                            "label": "Pasta local",
+                            "label": "Local folder",
                             "count": Wallpapers.items.length
                         },
                         {
                             "id": "community",
-                            "label": "Comunidade",
+                            "label": "Community",
                             "count": -1
                         }
                     ]
@@ -188,7 +188,7 @@ Item {
             }
         }
 
-        // Busca
+        // Search
         Rectangle {
             anchors.left: tabs.right
             anchors.leftMargin: 12
@@ -233,13 +233,13 @@ Item {
                 StyledText {
                     anchors.verticalCenter: parent.verticalCenter
                     visible: search.text === ""
-                    text: root.community ? "Buscar na Workshop do Wallpaper Engine" : "Buscar wallpaper"
+                    text: root.community ? "Search the Wallpaper Engine Workshop" : "Search wallpapers"
                     color: Theme.textMuted
                 }
             }
         }
 
-        // Testar se os wallpapers funcionam no Linux
+        // Test whether the wallpapers work on Linux
         StyledButton {
             id: scanButton
             visible: root.tab === "we"
@@ -247,7 +247,7 @@ Item {
             anchors.rightMargin: 10
             anchors.verticalCenter: parent.verticalCenter
             icon: Icons.check
-            text: CompatScan.running ? "Testando…" : "Testar"
+            text: CompatScan.running ? "Testing…" : "Test"
             onClicked: root.scanMenuOpen = !root.scanMenuOpen
         }
 
@@ -272,7 +272,7 @@ Item {
         }
     }
 
-    // ---------- Pasta (so na aba local) ----------
+    // ---------- Folder (local tab only) ----------
     Rectangle {
         id: pathBar
         anchors.left: parent.left
@@ -299,7 +299,7 @@ Item {
             }
             StyledText {
                 anchors.verticalCenter: parent.verticalCenter
-                text: "Pasta"
+                text: "Folder"
                 color: Theme.textDim
             }
         }
@@ -337,7 +337,7 @@ Item {
         }
     }
 
-    // ---------- Filtros (so na Comunidade) ----------
+    // ---------- Filters (Community only) ----------
     Item {
         id: communityBar
         anchors.left: parent.left
@@ -380,7 +380,7 @@ Item {
         }
     }
 
-    // ---------- Galeria ----------
+    // ---------- Gallery ----------
     GridView {
         id: grid
         anchors.left: parent.left
@@ -398,7 +398,7 @@ Item {
         model: root.filtered
         boundsBehavior: Flickable.StopAtBounds
 
-        // Comunidade: carrega a proxima pagina ao chegar no fim
+        // Community: loads the next page on reaching the end
         onAtYEndChanged: {
             if (atYEnd && root.community && contentHeight > height)
                 Workshop.loadMore();
@@ -436,7 +436,7 @@ Item {
             readonly property bool isWorkshop: modelData.source === "workshop"
             readonly property bool installed: isWorkshop && root.installedIds.includes(modelData.id)
             readonly property bool selected: isWorkshop ? root.communityId === modelData.id : root.selectedPath === modelData.path
-            // Previas da Workshop podem ser GIF sem extensao no link: tenta animar todas ao passar o mouse
+            // Workshop previews may be GIFs without an extension in the link: try to animate all of them on hover
             readonly property bool isGif: isWorkshop || modelData.thumb.toLowerCase().endsWith(".gif")
             readonly property var compat: root.compatInfo[modelData.compat] ?? null
 
@@ -457,7 +457,7 @@ Item {
                     }
                 }
 
-                // Previas .gif animam ao passar o mouse
+                // .gif previews animate on hover
                 Loader {
                     anchors.fill: parent
                     active: cell.isGif && mouse.containsMouse
@@ -469,7 +469,7 @@ Item {
                     }
                 }
 
-                // Selo do tipo
+                // Type badge
                 Rectangle {
                     visible: root.typeIcon(cell.modelData) !== ""
                     anchors.left: parent.left
@@ -499,7 +499,7 @@ Item {
                     }
                 }
 
-                // Titulo + compatibilidade
+                // Title + compatibility
                 Rectangle {
                     anchors.left: parent.left
                     anchors.right: parent.right
@@ -554,7 +554,7 @@ Item {
                 }
             }
 
-            // Selo "Instalado" (Comunidade)
+            // "Installed" badge (Community)
             Rectangle {
                 visible: cell.installed
                 anchors.right: thumb.right
@@ -577,14 +577,14 @@ Item {
                     }
                     StyledText {
                         anchors.verticalCenter: parent.verticalCenter
-                        text: "Instalado"
+                        text: "Installed"
                         font.pixelSize: 10
                         font.weight: Font.DemiBold
                     }
                 }
             }
 
-            // Borda e selo do selecionado
+            // Border and badge of the selected one
             Rectangle {
                 anchors.fill: thumb
                 anchors.margins: -3
@@ -639,13 +639,13 @@ Item {
                     }
                     root.selectedPath = cell.modelData.path;
                     if (Wallpapers.apply(cell.modelData.path))
-                        Ui.notify("Aplicando \"" + cell.modelData.name + "\"");
+                        Ui.notify("Applying \"" + cell.modelData.name + "\"");
                 }
             }
         }
     }
 
-    // Estado vazio
+    // Empty state
     Column {
         anchors.centerIn: grid
         spacing: 10
@@ -659,13 +659,13 @@ Item {
         }
         StyledText {
             anchors.horizontalCenter: parent.horizontalCenter
-            text: root.community && Workshop.error !== "" ? "Não foi possível abrir a Workshop. Confira a internet e clique em atualizar" : root.query !== "" ? "Nada encontrado para \"" + root.query + "\"" : root.tab === "we" ? "Nenhum wallpaper do Wallpaper Engine encontrado na Steam" : "Nenhuma imagem ou vídeo nesta pasta"
+            text: root.community && Workshop.error !== "" ? "Couldn't open the Workshop. Check your connection and click refresh" : root.query !== "" ? "Nothing found for \"" + root.query + "\"" : root.tab === "we" ? "No Wallpaper Engine wallpapers found in Steam" : "No images or videos in this folder"
             color: Theme.textMuted
         }
     }
 
-    // ---------- Teste de compatibilidade ----------
-    // Progresso
+    // ---------- Compatibility test ----------
+    // Progress
     Rectangle {
         visible: CompatScan.running
         anchors.left: grid.left
@@ -689,7 +689,7 @@ Item {
 
             StyledText {
                 width: parent.width
-                text: CompatScan.total > 0 ? "Testando " + Math.min(CompatScan.done + 1, CompatScan.total) + " de " + CompatScan.total + (CompatScan.current ? "  ·  " + CompatScan.current : "") : "Preparando o teste…"
+                text: CompatScan.total > 0 ? "Testing " + Math.min(CompatScan.done + 1, CompatScan.total) + " of " + CompatScan.total + (CompatScan.current ? "  ·  " + CompatScan.current : "") : "Preparing the test…"
                 font.weight: Font.DemiBold
             }
 
@@ -720,12 +720,12 @@ Item {
             anchors.rightMargin: 10
             anchors.verticalCenter: parent.verticalCenter
             icon: Icons.close
-            text: "Parar"
+            text: "Stop"
             onClicked: CompatScan.cancel()
         }
     }
 
-    // Menu do botao "Testar"
+    // "Test" button menu
     MouseArea {
         anchors.fill: parent
         visible: root.scanMenuOpen
@@ -758,13 +758,13 @@ Item {
                 model: [
                     {
                         "mode": "new",
-                        "title": "Testar os que faltam (" + CompatScan.untested + ")",
-                        "description": "Só os que ainda não têm o pontinho de compatibilidade"
+                        "title": "Test the untested ones (" + CompatScan.untested + ")",
+                        "description": "Only the ones without a compatibility dot yet"
                     },
                     {
                         "mode": "all",
-                        "title": "Testar todos de novo (" + Wallpapers.engineItems.length + ")",
-                        "description": "Refaz o teste de todos os wallpapers"
+                        "title": "Test all of them again (" + Wallpapers.engineItems.length + ")",
+                        "description": "Runs the test again on every wallpaper"
                     }
                 ]
 
@@ -819,7 +819,7 @@ Item {
                 rightPadding: 12
                 topPadding: 6
                 bottomPadding: 4
-                text: "Cada wallpaper roda 5 segundos escondido (3 por vez). Nada aparece na sua tela."
+                text: "Each wallpaper runs hidden for 5 seconds (3 at a time). Nothing shows up on your screen."
                 color: Theme.textMuted
                 font.pixelSize: 11
                 wrapMode: Text.WordWrap
@@ -827,7 +827,7 @@ Item {
         }
     }
 
-    // Carregando a Comunidade
+    // Loading the Community
     Rectangle {
         visible: root.community && Workshop.loading
         anchors.horizontalCenter: grid.horizontalCenter
@@ -841,24 +841,24 @@ Item {
         StyledText {
             id: loadingText
             anchors.centerIn: parent
-            text: "Carregando a Workshop…"
+            text: "Loading the Workshop…"
             color: Theme.textDim
         }
     }
 
-    // Aplica um item da Comunidade: se ja estiver instalado aplica, senao abre na Steam para assinar
+    // Applies a Community item: if it's already installed applies it, otherwise opens it in Steam to subscribe
     function applyCommunity(item) {
         const path = installedPath(item.id);
         if (path) {
             Wallpapers.apply(path);
-            Ui.notify("Aplicando \"" + item.name + "\"");
+            Ui.notify("Applying \"" + item.name + "\"");
         } else {
             Workshop.openInSteam(item.id);
-            Ui.notify("Clique em \"Inscrever-se\" na Steam. Quando baixar, aparece como instalado");
+            Ui.notify("Click \"Subscribe\" in Steam. Once it downloads, it shows up as installed");
         }
     }
 
-    // ---------- Rodape ----------
+    // ---------- Footer ----------
     Item {
         id: footer
         anchors.left: parent.left
@@ -875,7 +875,7 @@ Item {
 
             StyledText {
                 width: parent.width
-                text: root.selectedItem ? root.selectedItem.name : "Nenhum wallpaper selecionado"
+                text: root.selectedItem ? root.selectedItem.name : "No wallpaper selected"
                 color: root.selectedItem ? Theme.text : Theme.textMuted
                 font.weight: Font.DemiBold
             }
@@ -887,10 +887,10 @@ Item {
                     if (!item)
                         return "";
                     if (item.source === "workshop") {
-                        const status = root.installedIds.includes(item.id) ? "Instalado" : Workshop.watching === item.id ? "Esperando a Steam baixar…" : "Não instalado";
-                        return root.typeLabel(item) + " · " + Workshop.formatCount(item.subscriptions) + " inscritos · " + Workshop.formatSize(item.size) + " · " + status;
+                        const status = root.installedIds.includes(item.id) ? "Installed" : Workshop.watching === item.id ? "Waiting for Steam to download…" : "Not installed";
+                        return root.typeLabel(item) + " · " + Workshop.formatCount(item.subscriptions) + " subscribers · " + Workshop.formatSize(item.size) + " · " + status;
                     }
-                    const origin = item.source === "we" ? "Wallpaper Engine" : "Pasta local";
+                    const origin = item.source === "we" ? "Wallpaper Engine" : "Local folder";
                     const compat = root.compatInfo[item.compat];
                     return origin + " · " + root.typeLabel(item) + (compat ? " · " + compat.label : "");
                 }
@@ -905,10 +905,10 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             spacing: 8
 
-            // Comunidade
+            // Community
             StyledButton {
                 visible: root.community && root.selectedItem !== null
-                text: "Ver no navegador"
+                text: "View in browser"
                 icon: Icons.code
                 onClicked: Workshop.openInBrowser(root.selectedItem.id)
             }
@@ -916,7 +916,7 @@ Item {
             StyledButton {
                 visible: root.community && root.selectedItem !== null
                 readonly property bool installed: root.selectedItem !== null && root.installedIds.includes(root.selectedItem.id)
-                text: installed ? "Aplicar agora" : "Baixar pela Steam"
+                text: installed ? "Apply now" : "Download with Steam"
                 icon: installed ? Icons.check : Icons.add
                 primary: true
                 onClicked: root.applyCommunity(root.selectedItem)
@@ -924,7 +924,7 @@ Item {
 
             StyledButton {
                 visible: !root.community
-                text: "Usar no preset ativo"
+                text: "Use in active preset"
                 icon: Icons.presets
                 opacity: enabled ? 1 : 0.4
                 enabled: root.selectedPath !== "" && Config.preset(Config.options.activePreset) !== null
@@ -934,20 +934,20 @@ Item {
                         "wallpaper": root.selectedPath
                     });
                     Wallpapers.apply(root.selectedPath);
-                    Ui.notify("Wallpaper salvo no preset \"" + Config.preset(Config.options.activePreset).name + "\"");
+                    Ui.notify("Wallpaper saved to the preset \"" + Config.preset(Config.options.activePreset).name + "\"");
                 }
             }
 
             StyledButton {
                 visible: !root.community
-                text: "Aplicar agora"
+                text: "Apply now"
                 icon: Icons.check
                 primary: true
                 opacity: enabled ? 1 : 0.4
                 enabled: root.selectedItem !== null
                 onClicked: {
                     if (Wallpapers.apply(root.selectedItem.path))
-                        Ui.notify("Aplicando \"" + root.selectedItem.name + "\"");
+                        Ui.notify("Applying \"" + root.selectedItem.name + "\"");
                 }
             }
         }

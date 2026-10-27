@@ -3,12 +3,12 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 
-// Wallpapers da comunidade (Steam Workshop do Wallpaper Engine).
-// Instalar = assinar pela Steam; a Steam baixa para a pasta da Workshop e o Uix detecta.
+// Community wallpapers (Wallpaper Engine's Steam Workshop).
+// Install = subscribe through Steam; Steam downloads it to the Workshop folder and Uix detects it.
 Singleton {
     id: root
 
-    // Mesmo formato dos itens de Wallpapers, mais os dados da Workshop:
+    // Same format as the Wallpapers items, plus the Workshop data:
     // { source: "workshop", id, path, thumb, name, type, compat, subscriptions, size, tags }
     property var items: []
     property bool loading: false
@@ -27,41 +27,41 @@ Singleton {
     property var request: null
     property bool pending: false
 
-    // Id que esta sendo baixado pela Steam (para avisar quando terminar)
+    // Id being downloaded by Steam (to notify when it finishes)
     property string watching: ""
     property int watchTries: 0
 
     readonly property var sorts: [
         {
             "id": "trend",
-            "label": "Em alta"
+            "label": "Trending"
         },
         {
             "id": "mostrecent",
-            "label": "Recentes"
+            "label": "Recent"
         },
         {
             "id": "toprated",
-            "label": "Mais votados"
+            "label": "Top rated"
         },
         {
             "id": "subscribed",
-            "label": "Mais baixados"
+            "label": "Most subscribed"
         }
     ]
 
     readonly property var types: [
         {
             "id": "",
-            "label": "Todos"
+            "label": "All"
         },
         {
             "id": "Scene",
-            "label": "Cena"
+            "label": "Scene"
         },
         {
             "id": "Video",
-            "label": "Vídeo"
+            "label": "Video"
         },
         {
             "id": "Web",
@@ -125,7 +125,7 @@ Singleton {
         return "https://steamcommunity.com/sharedfiles/filedetails/?id=" + id;
     }
 
-    // Abre o item no app da Steam (la tem o botao "Inscrever-se", que baixa o wallpaper)
+    // Opens the item in the Steam app (it has the "Subscribe" button, which downloads the wallpaper)
     function openInSteam(id) {
         Quickshell.execDetached(["xdg-open", "steam://url/CommunityFilePage/" + id]);
         watching = id;
@@ -139,19 +139,19 @@ Singleton {
 
     function formatCount(n) {
         if (n >= 1000000)
-            return (n / 1000000).toFixed(1).replace(".", ",") + " mi";
+            return (n / 1000000).toFixed(1) + "M";
         if (n >= 1000)
-            return (n / 1000).toFixed(1).replace(".", ",") + " mil";
+            return (n / 1000).toFixed(1) + "K";
         return String(n);
     }
 
     function formatSize(bytes) {
         if (bytes >= 1073741824)
-            return (bytes / 1073741824).toFixed(1).replace(".", ",") + " GB";
+            return (bytes / 1073741824).toFixed(1) + " GB";
         return Math.max(1, Math.round(bytes / 1048576)) + " MB";
     }
 
-    // Enquanto a Steam baixa, procura o wallpaper na pasta a cada 8s (por ate ~3 min)
+    // While Steam downloads, look for the wallpaper in the folder every 8s (for up to ~3 min)
     Timer {
         id: watchTimer
         interval: 8000
@@ -172,13 +172,13 @@ Singleton {
         stdout: StdioCollector {
             onStreamFinished: {
                 if (root.pending)
-                    return; // resposta velha; a nova ja vai rodar
+                    return; // stale response; the new one is about to run
                 let data;
                 try {
                     data = JSON.parse(text);
                 } catch (e) {
                     data = {
-                        "error": "resposta inválida"
+                        "error": "invalid response"
                     };
                 }
                 if (data.error) {

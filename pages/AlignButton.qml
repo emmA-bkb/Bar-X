@@ -2,7 +2,7 @@ import QtQuick
 import qs.config
 import qs.components
 
-// Botao pequeno de alinhar widget (h: left/center/right, v: top/middle/bottom).
+// Small widget align button (h: left/center/right, v: top/middle/bottom).
 IconButton {
     property string h: ""
     property string v: ""

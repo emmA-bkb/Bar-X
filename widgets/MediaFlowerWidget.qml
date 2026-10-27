@@ -4,7 +4,7 @@ import qs.config
 import qs.components
 import qs.services
 
-// Musica: capa redonda (gira como um disco enquanto toca) e play em florzinha.
+// Music: round cover (spins like a record while playing) and a flower play button.
 WidgetCard {
     id: root
 
@@ -102,7 +102,7 @@ WidgetCard {
             }
         }
 
-        // Play em florzinha
+        // Flower play button
         Item {
             width: 76
             height: 76

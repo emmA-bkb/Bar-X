@@ -2,11 +2,11 @@ import QtQuick
 import Quickshell.Widgets
 import qs.config
 
-// Previa arredondada de um wallpaper. Sem imagem, mostra um degrade da cor de destaque.
+// Rounded wallpaper preview. Without an image it shows an accent color gradient.
 ClippingRectangle {
     id: root
 
-    property string source // caminho da miniatura
+    property string source // thumbnail path
     property color accent: Theme.accent
 
     radius: Theme.radiusSmall
@@ -30,7 +30,7 @@ ClippingRectangle {
     Image {
         id: img
         anchors.fill: parent
-        // Caminho local ou URL (previas da Workshop)
+        // Local path or URL (Workshop previews)
         source: !root.source ? "" : root.source.startsWith("http") ? root.source : "file://" + root.source
         fillMode: Image.PreserveAspectCrop
         asynchronous: true

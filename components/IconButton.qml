@@ -1,7 +1,7 @@
 import QtQuick
 import qs.config
 
-// Botao redondo so com icone.
+// Round icon-only button.
 Rectangle {
     id: root
 

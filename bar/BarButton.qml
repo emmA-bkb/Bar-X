@@ -2,7 +2,7 @@ import QtQuick
 import qs.config
 import qs.components
 
-// Botao redondo com icone, usado na barra.
+// Round icon button used on the bar.
 Rectangle {
     id: root
 

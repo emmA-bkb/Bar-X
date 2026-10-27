@@ -3,7 +3,7 @@ import Quickshell.Services.SystemTray
 import Quickshell.Widgets
 import qs.config
 
-// Bandeja do sistema. Clique ativa, botao direito abre o menu do app.
+// System tray. Click activates, right click opens the app's menu.
 BarGroup {
     id: root
 

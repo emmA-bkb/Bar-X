@@ -3,7 +3,7 @@ import qs.config
 import qs.components
 import qs.services
 
-// Clima com o icone dentro de uma florzinha.
+// Weather with the icon inside a flower.
 WidgetCard {
     id: root
 

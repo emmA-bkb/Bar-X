@@ -1,47 +1,48 @@
 # Bar X
 
-Presets de wallpaper + barra de tarefas + widgets para o **Hyprland**, feitos com [Quickshell](https://quickshell.org).
+Wallpaper + taskbar + widget presets for **Hyprland**, built with [Quickshell](https://quickshell.org).
 
-Cada preset junta um wallpaper (Wallpaper Engine, vídeo ou imagem), um estilo de barra e um layout de widgets.
+Each preset combines a wallpaper (Wallpaper Engine, video or image), a bar style and a widget layout.
 
-## O que tem
+## Features
 
-- **Barra de tarefas** própria (substitui a Waybar): em cima (Flutuante, Ilhas, Minimalista, Tonal), doca embaixo ou lateral. Apps organizados por área de trabalho, bandeja, CPU/RAM/SSD.
-- **Widgets** na área de trabalho: relógio, calendário, música (MPRIS/Spotify), clima, sistema, perfil e versões "flor" no estilo Material 3. Arrasta, redimensiona e alinha num editor.
-- **Wallpapers**: biblioteca do Wallpaper Engine (Steam), pasta local e a Comunidade (Steam Workshop), com teste de compatibilidade no Linux.
-- **Cores**: destaque por preset, cores tiradas do wallpaper, seletor RGB e efeito vidro (transparência com desfoque).
+- **Taskbar** of its own (replaces Waybar): top (Floating, Islands, Minimal, Tonal), bottom dock or side bar. Apps grouped by workspace, system tray, CPU/RAM/SSD.
+- **Desktop widgets**: clock, calendar, music (MPRIS/Spotify), weather, system, profile and Material 3 style "flower" versions. Drag, resize and align them in an editor.
+- **Wallpapers**: Wallpaper Engine library (Steam), a local folder and the Community tab (Steam Workshop), with a Linux compatibility test.
+- **Colors**: accent per preset, colors taken from the wallpaper, an RGB color picker and a glass effect (transparency with blur).
+- **Monitors**: a wallpaper per monitor (saved in each preset), bar on/off per monitor, primary monitor and monitor arrangement.
 
-## Requisitos
+## Requirements
 
-- Hyprland e Quickshell (`qs`)
-- `linux-wallpaperengine` (wallpapers do Wallpaper Engine) e `mpvpaper` (vídeos e imagens)
+- Hyprland and Quickshell (`qs`)
+- `linux-wallpaperengine` (Wallpaper Engine wallpapers) and `mpvpaper` (videos and images)
 - `ffmpeg`, `python3`, `curl`
-- Opcional: `hyprlock` (botão Bloquear), Steam com Wallpaper Engine
+- Optional: `hyprlock` (Lock button), Steam with Wallpaper Engine
 
-## Como usar
+## Usage
 
 ```bash
-./uix                       # abre/fecha a janela de configurações
-scripts/uix-start.sh        # inicia a barra, os widgets e o wallpaper do preset ativo
+./uix                       # opens/closes the settings window
+scripts/uix-start.sh        # starts the bar, the widgets and the active preset's wallpaper
 ```
 
-Para iniciar no login, no `~/.config/hypr/hyprland.lua` troque as linhas da Waybar e do linux-wallpaper-engine-ux por:
+To start it on login, in `~/.config/hypr/hyprland.lua` replace the Waybar and linux-wallpaper-engine-ux lines with:
 
 ```lua
-hl.exec_cmd("/caminho/para/o/projeto/scripts/uix-start.sh")
+hl.exec_cmd("/path/to/the/project/scripts/uix-start.sh")
 ```
 
-As configurações (presets, widgets, monitores, cores) ficam em `~/.config/uix/config.json`, fora do projeto.
+Settings (presets, widgets, monitors, colors) are stored in `~/.config/uix/config.json`, outside the project.
 
-### Configurações da sua máquina (`.env`)
+### Machine-specific settings (`.env`)
 
-Comandos que dependem do seu sistema ficam num arquivo `.env` na pasta do projeto, que o git ignora:
+Commands that depend on your system go in a `.env` file in the project folder, which git ignores:
 
 ```bash
-cp .env.example .env   # e edite os valores
+cp .env.example .env   # then edit the values
 ```
 
-| Variável | Para que serve |
+| Variable | What it does |
 |---|---|
-| `UIX_LAUNCHER` | Comando do botão de menu (☰) da barra. Vazio esconde o botão. |
-| `UIX_SYSTEM_MONITOR` | Comando ao clicar na RAM da barra (ex.: `kitty -e btop`). |
+| `UIX_LAUNCHER` | Command of the menu button (☰) on the bar. Empty hides the button. |
+| `UIX_SYSTEM_MONITOR` | Command run when you click RAM on the bar (e.g. `kitty -e btop`). |

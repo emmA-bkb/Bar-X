@@ -5,19 +5,19 @@ import Quickshell.Widgets
 import qs.config
 import qs.components
 
-// Janelas abertas. Clique foca, clique do meio fecha.
-// Com "taskbarSortByWorkspace", ficam em ordem pela area de trabalho (1, 2, 3...) e,
-// dentro da mesma area, na ordem em que foram abertas, sem pular de lugar.
-// Com "taskbarWorkspaceBadge", cada icone mostra o numero da area.
+// Open windows. Click focuses, middle click closes.
+// With "taskbarSortByWorkspace" they are ordered by workspace (1, 2, 3...) and,
+// within the same workspace, in the order they were opened, without jumping around.
+// With "taskbarWorkspaceBadge" each icon shows its workspace number.
 BarGroup {
     id: root
 
     spacing: 2
 
-    // Lista de apps instalados; os icones sao recalculados quando ela termina de carregar
+    // Installed apps; icons are recomputed when the list finishes loading
     readonly property var apps: DesktopEntries.applications.values
 
-    // Ordem em que cada janela apareceu (endereco -> numero), para a ordem nao mudar sozinha
+    // Order in which each window appeared (address -> number), so the order doesn't change by itself
     property var seen: ({
             "next": 0
         })
@@ -34,7 +34,7 @@ BarGroup {
         }
         const byOpening = (a, b) => seen[a.address] - seen[b.address];
         if (Config.options.taskbarSortByWorkspace) {
-            // Areas especiais (ids negativos, ex.: scratchpad) vao para o fim
+            // Special workspaces (negative ids, e.g. scratchpad) go to the end
             const key = t => wsId(t) > 0 ? wsId(t) : 10000 - wsId(t);
             return list.sort((a, b) => key(a) - key(b) || byOpening(a, b));
         }
@@ -63,7 +63,7 @@ BarGroup {
 
             readonly property var workspace: modelData.workspace
             readonly property string wsLabel: !workspace ? "" : workspace.id > 0 ? workspace.name : "S"
-            // Primeiro app de uma nova area ganha um respiro a esquerda
+            // The first app of a new workspace gets some space on its left
             readonly property bool groupStart: Config.options.taskbarSortByWorkspace && index > 0 && root.wsId(root.windows[index - 1]) !== root.wsId(modelData)
 
             width: BarStyle.itemHeight + (groupStart && !BarStyle.vertical ? 6 : 0)
@@ -90,7 +90,7 @@ BarGroup {
                     source: root.iconFor(app.modelData.wayland ? app.modelData.wayland.appId : "")
                 }
 
-                // Numero da area de trabalho
+                // Workspace number
                 Rectangle {
                     visible: Config.options.taskbarWorkspaceBadge && app.wsLabel !== ""
                     anchors.right: parent.right

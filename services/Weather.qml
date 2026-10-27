@@ -4,13 +4,13 @@ import Quickshell
 import Quickshell.Io
 import qs.config
 
-// Clima atual via wttr.in (sem chave de API). Cidade vazia = detecta pela conexao.
+// Current weather via wttr.in (no API key). Empty city = detected from the connection.
 Singleton {
     id: root
 
     property bool ready: false
     property string temperature: "--"
-    property string condition: "Carregando clima"
+    property string condition: "Loading weather"
     property string city: ""
     property string humidity: "--"
     property string wind: "--"
@@ -23,7 +23,7 @@ Singleton {
             proc.running = true;
     }
 
-    // Codigos do wttr.in -> icone
+    // wttr.in codes -> icon
     function iconFor(code) {
         const c = Number(code);
         if (c === 113)
@@ -48,14 +48,14 @@ Singleton {
     Process {
         id: proc
 
-        command: ["curl", "-s", "-m", "15", "https://wttr.in/" + root.query + "?format=j1&lang=pt"]
+        command: ["curl", "-s", "-m", "15", "https://wttr.in/" + root.query + "?format=j1"]
 
         stdout: StdioCollector {
             onStreamFinished: {
                 try {
                     const data = JSON.parse(text);
                     const c = data.current_condition[0];
-                    const desc = c.lang_pt && c.lang_pt[0] ? c.lang_pt[0].value : c.weatherDesc[0].value;
+                    const desc = c.weatherDesc[0].value;
                     root.temperature = c.temp_C + "°C";
                     root.condition = desc.charAt(0).toUpperCase() + desc.slice(1);
                     root.humidity = c.humidity + "%";
@@ -65,7 +65,7 @@ Singleton {
                     root.ready = true;
                 } catch (e) {
                     if (!root.ready)
-                        root.condition = "Clima indisponível";
+                        root.condition = "Weather unavailable";
                 }
             }
         }

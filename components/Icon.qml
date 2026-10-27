@@ -2,7 +2,7 @@ import QtQuick
 import QtQuick.Shapes
 import qs.config
 
-// Desenha um caminho SVG 24x24 (ver config/Icons.qml) em qualquer tamanho e cor.
+// Draws a 24x24 SVG path (see config/Icons.qml) at any size and color.
 Item {
     id: root
 

@@ -3,7 +3,7 @@ import Quickshell
 import Quickshell.Hyprland
 import qs.config
 
-// Barra em cima: Flutuante, Ilhas (pilulas), Minimalista ou Tonal.
+// Top bar: Floating, Islands (pills), Minimal or Tonal.
 BarWindow {
     id: bar
 
@@ -16,7 +16,7 @@ BarWindow {
     implicitHeight: BarStyle.thickness + BarStyle.gap * 2
     margins.top: preview ? 52 : 0
 
-    // Fundo inteiro (Flutuante e Minimalista)
+    // Full background (Floating and Minimal)
     Rectangle {
         visible: !BarStyle.island
         x: BarStyle.sideMargin

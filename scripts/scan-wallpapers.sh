@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Lista imagens e videos de uma ou mais pastas e gera miniaturas dos videos.
-# Uso: scan-wallpapers.sh <pasta-de-cache> <pasta> [pasta...]
-# Saida: uma linha por arquivo -> tipo<TAB>caminho<TAB>miniatura
+# Lists images and videos in one or more folders and generates video thumbnails.
+# Usage: scan-wallpapers.sh <cache-folder> <folder> [folder...]
+# Output: one line per file -> type<TAB>path<TAB>thumbnail
 cache="$1"
 shift
 mkdir -p "$cache"

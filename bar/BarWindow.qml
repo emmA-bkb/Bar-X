@@ -3,9 +3,9 @@ import Quickshell
 import Quickshell.Wayland
 import qs.config
 
-// Base das janelas de barra (em cima, embaixo, lateral).
+// Base for the bar windows (top, bottom, side).
 PanelWindow {
-    // Modo de teste: UIX_BAR_PREVIEW=1 mostra a barra sem reservar espaco, por cima de tudo
+    // Test mode: UIX_BAR_PREVIEW=1 shows the bar on top of everything without reserving space
     readonly property bool preview: Quickshell.env("UIX_BAR_PREVIEW") === "1"
 
     // Monitor name, passed in by Bar.qml (reading `screen` here would loop with `visible`)

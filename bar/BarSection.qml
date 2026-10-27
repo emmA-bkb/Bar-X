@@ -1,7 +1,7 @@
 import QtQuick
 import qs.config
 
-// Grupo de modulos da barra. Com pill = true vira uma pilula (estilos Ilhas, Tonal e doca).
+// Group of bar modules. With pill = true it becomes a pill (Islands, Tonal and dock styles).
 Rectangle {
     id: root
 

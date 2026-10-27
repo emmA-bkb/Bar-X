@@ -6,7 +6,7 @@ import qs.config
 import qs.components
 import qs.services
 
-// Perfil: foto (~/.face), nome do usuario, tempo ligado, clima e atalhos.
+// Profile: photo (~/.face), user name, uptime, weather and shortcuts.
 WidgetCard {
     id: root
 
@@ -72,7 +72,7 @@ WidgetCard {
                 font.weight: Font.DemiBold
             }
             WText {
-                text: "Ligado há " + root.uptime
+                text: "Up for " + root.uptime
                 color: root.fgMuted
                 font.pixelSize: 13
             }
@@ -99,7 +99,7 @@ WidgetCard {
         anchors.margins: 22
         spacing: 10
 
-        // Bloquear: hyprlock (com a sua config ou o tema do Uix), ver scripts/lock.sh
+        // Lock: hyprlock (with your config or the Uix theme), see scripts/lock.sh
         Rectangle {
             width: lockRow.implicitWidth + 30
             height: 42
@@ -117,7 +117,7 @@ WidgetCard {
                     color: root.onAccent
                 }
                 WText {
-                    text: "Bloquear"
+                    text: "Lock"
                     color: root.onAccent
                     font.pixelSize: 15
                     font.weight: Font.DemiBold
@@ -133,7 +133,7 @@ WidgetCard {
             }
         }
 
-        // Abrir o Uix
+        // Open Uix
         Rectangle {
             width: 42
             height: 42

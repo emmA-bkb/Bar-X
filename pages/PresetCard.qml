@@ -4,12 +4,29 @@ import qs.services
 import qs.components
 import qs.widgets
 
-// Card de um preset: previa da area de trabalho (wallpaper + barra + widgets), nome e acoes.
+// Preset card: desktop preview (wallpaper + bar + widgets), name and actions.
 Rectangle {
     id: root
 
     property var preset
     readonly property bool active: Config.options.activePreset === preset.id
+
+    // Other connected monitors, drawn as tiny screens in the corner that matches where they
+    // sit next to the primary one (e.g. a monitor above and to the right -> top right corner)
+    readonly property var mainMonitor: Monitors.list.find(m => m.name === Monitors.primary) ?? null
+    readonly property var otherMonitors: Monitors.list.filter(m => m.name !== Monitors.primary)
+    readonly property bool othersAbove: {
+        if (!mainMonitor || otherMonitors.length === 0)
+            return true;
+        const cy = otherMonitors.reduce((sum, m) => sum + m.y + m.h / 2, 0) / otherMonitors.length;
+        return cy < mainMonitor.y + mainMonitor.h / 2;
+    }
+    readonly property bool othersRight: {
+        if (!mainMonitor || otherMonitors.length === 0)
+            return true;
+        const cx = otherMonitors.reduce((sum, m) => sum + m.x + m.w / 2, 0) / otherMonitors.length;
+        return cx >= mainMonitor.x + mainMonitor.w / 2;
+    }
 
     radius: Theme.radiusMedium
     color: hover.hovered ? Theme.surfaceHover : Theme.surface
@@ -36,10 +53,11 @@ Rectangle {
         cursorShape: Qt.PointingHandCursor
         onClicked: {
             Config.applyPreset(root.preset.id);
-            // A barra do Uix acompanha o config sozinha; o wallpaper precisa ser aplicado
-            if (root.preset.wallpaper)
-                Wallpapers.apply(root.preset.wallpaper);
-            Ui.notify("Preset \"" + root.preset.name + "\" aplicado");
+            // The Uix bar follows the config on its own; the wallpaper has to be applied
+            // (every monitor: the preset's main wallpaper and the other monitors' own ones)
+            if (!root.preset.wallpaper || !Wallpapers.apply(root.preset.wallpaper))
+                Wallpapers.applyAll();
+            Ui.notify("Preset \"" + root.preset.name + "\" applied");
         }
     }
 
@@ -56,11 +74,44 @@ Rectangle {
         accent: root.preset.accent
         glass: Config.transparencyFor(root.preset)
 
-        // Selo do preset ativo
+        Row {
+            id: minis
+            x: root.othersRight ? preview.width - width - 8 : 8
+            y: root.othersAbove ? 8 : preview.height - height - 8
+            spacing: 6
+            layoutDirection: root.othersRight ? Qt.RightToLeft : Qt.LeftToRight
+            transformOrigin: root.othersAbove ? (root.othersRight ? Item.TopRight : Item.TopLeft) : (root.othersRight ? Item.BottomRight : Item.BottomLeft)
+            scale: hover.hovered ? 1.08 : 1
+
+            Behavior on scale {
+                NumberAnimation {
+                    duration: Theme.animNormal
+                    easing.type: Easing.OutCubic
+                }
+            }
+
+            Repeater {
+                model: root.otherMonitors
+
+                delegate: MonitorMini {
+                    required property var modelData
+                    required property int index
+
+                    height: Math.round(preview.height * 0.36)
+                    width: Math.round(height * modelData.w / Math.max(1, modelData.h))
+                    source: Wallpapers.thumbFor(Config.presetMonitorWallpaper(root.preset, modelData.name))
+                    accent: root.preset.accent
+                    ring: root.color
+                    bar: Config.monitorBar(modelData.name)
+                    label: String(index + 2)
+                }
+            }
+        }
+
+        // Active preset badge (moves left when the tiny screens take the bottom right corner)
         Rectangle {
-            anchors.right: parent.right
-            anchors.bottom: parent.bottom
-            anchors.margins: 8
+            x: !root.othersAbove && root.othersRight && root.otherMonitors.length > 0 ? 8 : preview.width - width - 8
+            y: preview.height - height - 8
             width: 26
             height: 26
             radius: 13
@@ -117,7 +168,7 @@ Rectangle {
                 }
 
                 StyledText {
-                    text: "Barra " + Ui.barName(root.preset.bar).toLowerCase()
+                    text: "Bar: " + Ui.barName(root.preset.bar)
                     color: Theme.textMuted
                     font.pixelSize: 12
                 }
@@ -146,7 +197,7 @@ Rectangle {
                 baseColor: "transparent"
                 onClicked: {
                     Config.removePreset(root.preset.id);
-                    Ui.notify("Preset \"" + root.preset.name + "\" removido");
+                    Ui.notify("Preset \"" + root.preset.name + "\" removed");
                 }
             }
         }

@@ -3,7 +3,7 @@ import Quickshell
 import qs.config
 import qs.components
 
-// Relogio. Na horizontal "HH:mm • dd/MM"; na lateral a hora em cima do minuto.
+// Clock. Horizontal: "HH:mm • dd/MM"; on the side bar the hour above the minutes.
 Item {
     implicitWidth: BarStyle.vertical ? BarStyle.itemHeight : row.implicitWidth
     implicitHeight: BarStyle.vertical ? column.implicitHeight : BarStyle.itemHeight

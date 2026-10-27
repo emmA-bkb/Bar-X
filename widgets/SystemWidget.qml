@@ -21,7 +21,7 @@ WidgetCard {
                     "value": SysStats.ram
                 },
                 {
-                    "label": "Disco",
+                    "label": "Disk",
                     "value": SysStats.disk
                 }
             ]

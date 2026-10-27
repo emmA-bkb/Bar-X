@@ -1,7 +1,7 @@
 import QtQuick
 import qs.config
 
-// Item da barra lateral.
+// Sidebar item.
 Rectangle {
     id: root
 
@@ -21,7 +21,7 @@ Rectangle {
         }
     }
 
-    // Indicador lateral do item ativo
+    // Side indicator of the active item
     Rectangle {
         anchors.left: parent.left
         anchors.verticalCenter: parent.verticalCenter

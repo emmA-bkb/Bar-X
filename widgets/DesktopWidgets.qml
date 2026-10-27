@@ -4,8 +4,8 @@ import Quickshell.Wayland
 import qs.config
 import qs.services
 
-// Coloca os widgets do layout ativo na area de trabalho de verdade.
-// Ficam na camada "bottom": acima do wallpaper e abaixo das janelas.
+// Puts the active layout's widgets on the real desktop.
+// They live on the "bottom" layer: above the wallpaper and below the windows.
 Scope {
     id: root
 
@@ -34,7 +34,7 @@ Scope {
                 left: true
             }
 
-            // Posicao salva como fracao da tela
+            // Position saved as a fraction of the screen
             margins {
                 left: Math.round(modelData.x * root.screen.width)
                 top: Math.round(modelData.y * root.screen.height)
@@ -47,7 +47,7 @@ Scope {
             WlrLayershell.layer: WlrLayer.Bottom
             WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
 
-            // Desenhado no tamanho original e reduzido/ampliado pelo "scale" do widget
+            // Drawn at its original size and scaled by the widget's "scale"
             WidgetView {
                 type: window.modelData.type
                 glass: root.glass

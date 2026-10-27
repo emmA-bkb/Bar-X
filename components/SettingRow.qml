@@ -1,7 +1,7 @@
 import QtQuick
 import qs.config
 
-// Linha de configuracao: icone + titulo/descricao a esquerda, controle a direita.
+// Settings row: icon + title/description on the left, control on the right.
 Rectangle {
     id: root
 

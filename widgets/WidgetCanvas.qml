@@ -4,39 +4,39 @@ import qs.config
 import qs.components
 import qs.services
 
-// Miniatura da area de trabalho: wallpaper, barra e widgets na escala da tela real.
-// Com editable = true os widgets podem ser arrastados, redimensionados pelo canto,
-// alinhados e ajustados pelo teclado:
-//   setas = mover na grade (Shift = 1px)   + / - = tamanho   Ctrl+D = duplicar   Delete = remover
+// Desktop miniature: wallpaper, bar and widgets at the real screen's scale.
+// With editable = true widgets can be dragged, resized from the corner,
+// aligned and adjusted with the keyboard:
+//   arrows = move on the grid (Shift = 1px)   + / - = size   Ctrl+D = duplicate   Delete = remove
 ClippingRectangle {
     id: root
 
     property var layout // { id, name, widgets: [{ uid, type, x, y, scale?, bgOpacity? }] }
     property bool editable: false
-    property string wallpaper // caminho da miniatura
+    property string wallpaper // thumbnail path
     property string barStyle: "floating"
     property color accent: Theme.accent
-    // Efeito vidro (por padrao o do preset ativo; os cards de preset passam o deles)
+    // Glass effect (the active preset's by default; preset cards pass their own)
     property real glass: Config.currentTransparency()
     readonly property bool darkText: Colors.glassText(glass, wallpaper)
 
     property string selected: ""
     property bool dragging: false
 
-    // Mudanca ainda nao salva (enquanto arrasta um controle): { uid, patch }
+    // Change not saved yet (while dragging a control): { uid, patch }
     property var preview: null
 
     readonly property real s: width / Ui.screenWidth
-    readonly property real gridPx: 24 // grade em pixels da tela real
+    readonly property real gridPx: 24 // grid in real screen pixels
     readonly property real grid: gridPx * s
-    readonly property real marginPx: 24 // distancia das bordas ao alinhar
-    readonly property real topMarginPx: 72 // deixa espaco para a barra
+    readonly property real marginPx: 24 // distance from the edges when aligning
+    readonly property real topMarginPx: 72 // leaves room for the bar
 
     readonly property real minScale: 0.4
     readonly property real maxScale: 1.6
 
-    // Cores dos widgets: do wallpaper desta previa, ou as manuais
-    // (no modo manual sem cor propria, usa o destaque do preset mostrado)
+    // Widget colors: from this preview's wallpaper, or the manual ones
+    // (in manual mode without its own color, uses the shown preset's accent)
     readonly property var colors: {
         if (Colors.dynamic)
             return Colors.forThumb(wallpaper);
@@ -55,7 +55,7 @@ ClippingRectangle {
         return w ? effective(w) : null;
     }
 
-    // ---------- Geometria (tudo em fracao da tela) ----------
+    // ---------- Geometry (all in screen fractions) ----------
 
     function effective(w) {
         const merged = Object.assign({
@@ -74,7 +74,7 @@ ClippingRectangle {
         };
     }
 
-    // Mantem o widget dentro da tela
+    // Keeps the widget inside the screen
     function clamped(w) {
         const size = sizeOf(w);
         return Object.assign({}, w, {
@@ -91,7 +91,7 @@ ClippingRectangle {
             };
     }
 
-    // Salva uma mudanca no widget selecionado (ajustando a posicao se ele crescer para fora da tela)
+    // Saves a change to the selected widget (moving it if it grows past the screen)
     function commit(patch) {
         preview = null;
         const base = layout ? layout.widgets.find(i => i.uid === selected) : null;
@@ -227,7 +227,7 @@ ClippingRectangle {
         unit: root.width / 320
     }
 
-    // Pontos da grade enquanto arrasta
+    // Grid dots while dragging
     Canvas {
         id: dots
         anchors.fill: parent
@@ -254,7 +254,7 @@ ClippingRectangle {
         }
     }
 
-    // Clique no fundo tira a selecao
+    // Clicking the background clears the selection
     MouseArea {
         anchors.fill: parent
         enabled: root.editable
@@ -282,7 +282,7 @@ ClippingRectangle {
             z: isSelected ? 2 : 1
 
             WidgetView {
-                // Na previa os botoes dos widgets nao respondem (clique e para arrastar/escolher)
+                // In the preview the widgets' buttons don't respond (clicks are for dragging/selecting)
                 enabled: false
                 type: w.modelData.type
                 colors: root.colors
@@ -295,7 +295,7 @@ ClippingRectangle {
                 scale: root.s * w.wd.scale
             }
 
-            // Contorno de selecao / hover
+            // Selection / hover outline
             Rectangle {
                 visible: root.editable && (w.isSelected || mouse.containsMouse)
                 anchors.fill: parent
@@ -338,7 +338,7 @@ ClippingRectangle {
                     root.dragging = false;
                     if (!moved)
                         return;
-                    // Encaixa na grade (segure Shift para soltar livre)
+                    // Snaps to the grid (hold Shift to drop freely)
                     const free = mouse.modifiers & Qt.ShiftModifier;
                     const snap = v => free ? v : Math.round(v / root.grid) * root.grid;
                     root.commit({
@@ -348,7 +348,7 @@ ClippingRectangle {
                 }
             }
 
-            // Alca de redimensionar (canto inferior direito)
+            // Resize handle (bottom-right corner)
             Rectangle {
                 visible: root.editable && w.isSelected && !root.dragging
                 x: parent.width - width / 2 - 1
@@ -372,7 +372,7 @@ ClippingRectangle {
                         const byW = p.x / (base.w * root.s);
                         const byH = p.y / (base.h * root.s);
                         const sc = Math.max(root.minScale, Math.min(root.maxScale, Math.max(byW, byH)));
-                        return Math.round(sc * 20) / 20; // passos de 5%
+                        return Math.round(sc * 20) / 20; // 5% steps
                     }
 
                     onPositionChanged: mouse => {
@@ -387,7 +387,7 @@ ClippingRectangle {
                 }
             }
 
-            // Etiqueta com nome e tamanho
+            // Label with name and size
             Rectangle {
                 visible: root.editable && w.isSelected && !root.dragging
                 anchors.horizontalCenter: parent.horizontalCenter

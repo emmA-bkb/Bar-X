@@ -4,8 +4,8 @@ import Quickshell.Widgets
 import qs.config
 import qs.components
 
-// Player de musica. Prefere o Spotify; senao usa o primeiro player MPRIS aberto.
-// Os botoes funcionam na area de trabalho; no editor do Uix o arrastar fica por cima.
+// Music player. Prefers Spotify; otherwise uses the first open MPRIS player.
+// The buttons work on the desktop; in the Uix editor dragging takes over.
 WidgetCard {
     id: root
 
@@ -16,7 +16,7 @@ WidgetCard {
     readonly property bool hasTrack: player !== null && (player.trackTitle ?? "") !== ""
     readonly property real progress: player && player.length > 0 ? Math.min(1, player.position / player.length) : 0
 
-    // A posicao do MPRIS nao atualiza sozinha
+    // The MPRIS position doesn't update by itself
     Timer {
         interval: 1000
         repeat: true
@@ -62,14 +62,14 @@ WidgetCard {
 
         WText {
             width: parent.width
-            text: root.hasTrack ? root.player.trackTitle : "Nada tocando"
+            text: root.hasTrack ? root.player.trackTitle : "Nothing playing"
             font.pixelSize: 22
             font.weight: Font.DemiBold
         }
 
         WText {
             width: parent.width
-            text: root.hasTrack ? (root.player.trackArtist || root.player.identity) : "Abra o Spotify para ver a música aqui"
+            text: root.hasTrack ? (root.player.trackArtist || root.player.identity) : "Open Spotify to see your music here"
             color: root.fgDim
             font.pixelSize: 16
         }

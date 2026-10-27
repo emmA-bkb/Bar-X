@@ -4,8 +4,8 @@ import qs.components
 import qs.services
 import qs.widgets
 
-// Editor de layouts de widgets: arraste os widgets na previa da area de trabalho.
-// Por enquanto e so previa, nada e colocado na tela de verdade.
+// Widget layout editor: drag the widgets on the desktop preview.
+// Changes are saved to the layout; the desktop shows the active one.
 Item {
     id: root
 
@@ -15,10 +15,10 @@ Item {
 
     function newLayout() {
         const n = Config.options.widgetLayouts.length + 1;
-        // Comeca como copia do layout atual
+        // Starts as a copy of the current layout
         const widgets = layout ? JSON.parse(JSON.stringify(layout.widgets)) : [];
-        Config.addLayout("Meu layout " + n, widgets);
-        Ui.notify("Layout criado. Clique duas vezes no nome para renomear");
+        Config.addLayout("My layout " + n, widgets);
+        Ui.notify("Layout created. Double-click the name to rename it");
     }
 
     function addWidget(type) {
@@ -32,7 +32,7 @@ Item {
         pickerOpen = false;
     }
 
-    // ---------- Layouts + adicionar ----------
+    // ---------- Layouts + add ----------
     Item {
         id: top
         anchors.left: parent.left
@@ -88,7 +88,7 @@ Item {
             }
         }
 
-        // Liga/desliga os widgets na area de trabalho de verdade
+        // Turns the widgets on the real desktop on/off
         Row {
             id: desktopToggle
             anchors.right: addButton.left
@@ -98,7 +98,7 @@ Item {
 
             StyledText {
                 anchors.verticalCenter: parent.verticalCenter
-                text: "Mostrar na área de trabalho"
+                text: "Show on desktop"
                 color: Theme.textDim
             }
 
@@ -107,7 +107,7 @@ Item {
                 checked: Config.options.widgetsEnabled
                 onToggled: c => {
                     System.setWidgetsEnabled(c);
-                    Ui.notify(c ? "Widgets na área de trabalho" : "Widgets escondidos");
+                    Ui.notify(c ? "Widgets on the desktop" : "Widgets hidden");
                 }
             }
         }
@@ -117,13 +117,13 @@ Item {
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
             icon: Icons.add
-            text: "Adicionar widget"
+            text: "Add widget"
             primary: true
             onClicked: root.pickerOpen = !root.pickerOpen
         }
     }
 
-    // ---------- Previa ----------
+    // ---------- Preview ----------
     WidgetCanvas {
         id: canvas
         anchors.top: top.bottom
@@ -138,7 +138,7 @@ Item {
         barStyle: root.activePreset ? root.activePreset.bar : "floating"
     }
 
-    // ---------- Controles do widget selecionado ----------
+    // ---------- Selected widget controls ----------
     Rectangle {
         id: hint
 
@@ -162,7 +162,7 @@ Item {
             anchors.centerIn: parent
             width: parent.width - 40
             horizontalAlignment: Text.AlignHCenter
-            text: "Clique num widget para ajustar  ·  Arraste o canto para redimensionar  ·  Setas movem (Shift = 1px)  ·  + / − tamanho  ·  Ctrl+D duplica  ·  Delete remove"
+            text: "Click a widget to adjust it  ·  Drag the corner to resize  ·  Arrows move (Shift = 1px)  ·  + / − size  ·  Ctrl+D duplicates  ·  Delete removes"
             color: Theme.textMuted
             font.pixelSize: 12
         }
@@ -174,7 +174,7 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             spacing: 16
 
-            // Nome e posicao
+            // Name and position
             Row {
                 anchors.verticalCenter: parent.verticalCenter
                 width: 168
@@ -219,7 +219,7 @@ Item {
 
                 StyledText {
                     leftPadding: 8
-                    text: "Tamanho  " + Math.round(sizeSlider.shownValue) + "%"
+                    text: "Size  " + Math.round(sizeSlider.shownValue) + "%"
                     color: Theme.textDim
                     font.pixelSize: 12
                 }
@@ -248,7 +248,7 @@ Item {
 
                 StyledText {
                     leftPadding: 8
-                    text: "Fundo  " + Math.round(bgSlider.shownValue) + "%"
+                    text: "Background  " + Math.round(bgSlider.shownValue) + "%"
                     color: Theme.textDim
                     font.pixelSize: 12
                 }
@@ -273,7 +273,7 @@ Item {
 
             Divider {}
 
-            // Alinhar: linha de cima = horizontal, linha de baixo = vertical
+            // Align: top row = horizontal, bottom row = vertical
             Grid {
                 anchors.verticalCenter: parent.verticalCenter
                 columns: 3
@@ -348,7 +348,7 @@ Item {
         }
     }
 
-    // ---------- Menu de widgets ----------
+    // ---------- Widget menu ----------
     MouseArea {
         anchors.fill: parent
         visible: root.pickerOpen

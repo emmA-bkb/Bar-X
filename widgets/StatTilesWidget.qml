@@ -3,7 +3,7 @@ import qs.config
 import qs.components
 import qs.services
 
-// CPU, RAM e disco em blocos separados, cada um com o icone numa florzinha.
+// CPU, RAM and disk in separate tiles, each with its icon inside a flower.
 WidgetCard {
     id: root
 
@@ -26,7 +26,7 @@ WidgetCard {
                     "icon": Icons.memory
                 },
                 {
-                    "label": "Disco",
+                    "label": "Disk",
                     "value": SysStats.disk,
                     "icon": Icons.disk
                 }

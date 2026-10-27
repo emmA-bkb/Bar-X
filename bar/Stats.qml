@@ -4,8 +4,8 @@ import qs.config
 import qs.components
 import qs.services
 
-// CPU, RAM e SSD. Clicking RAM runs UIX_SYSTEM_MONITOR from .env (e.g. a terminal with btop).
-// Na lateral fica compacto: rotulo pequeno em cima do numero.
+// CPU, RAM and SSD. Clicking RAM runs UIX_SYSTEM_MONITOR from .env (e.g. a terminal with btop).
+// On the side bar it is compact: small label above the number.
 BarGroup {
     spacing: BarStyle.vertical ? 8 : BarStyle.minimal ? 10 : 12
 

@@ -4,7 +4,7 @@ import Quickshell
 import Quickshell.Io
 import qs.config
 
-// Wallpapers da pasta local (imagens e videos) e do Wallpaper Engine (Steam Workshop).
+// Wallpapers from the local folder (images and videos) and from Wallpaper Engine (Steam Workshop).
 Singleton {
     id: root
 
@@ -63,6 +63,7 @@ Singleton {
         Config.setMonitor(name, {
             "wallpaper": path
         });
+        Config.saveWallpapersToPreset();
         applyAll();
     }
 
@@ -139,7 +140,7 @@ Singleton {
     Process {
         id: proc
 
-        // A pasta escolhida + os wallpapers que vem com o Uix (assets/wallpapers)
+        // The chosen folder + the wallpapers that ship with Uix (assets/wallpapers)
         command: ["bash", Quickshell.shellPath("scripts/scan-wallpapers.sh"), root.cacheDir, root.dir, Quickshell.shellPath("assets/wallpapers")]
 
         stdout: StdioCollector {

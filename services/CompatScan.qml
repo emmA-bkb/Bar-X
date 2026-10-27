@@ -4,7 +4,7 @@ import Quickshell
 import Quickshell.Io
 import qs.config
 
-// Testa se os wallpapers do Wallpaper Engine funcionam no Linux (scripts/scan-compat.py).
+// Tests whether Wallpaper Engine wallpapers work on Linux (scripts/scan-compat.py).
 Singleton {
     id: root
 
@@ -20,7 +20,7 @@ Singleton {
 
     readonly property int untested: Wallpapers.engineItems.filter(i => !i.compat).length
 
-    // mode: "new" (so os que ainda nao foram testados) ou "all" (todos de novo)
+    // mode: "new" (only the ones not tested yet) or "all" (all of them again)
     function start(mode) {
         if (running)
             return;
@@ -48,7 +48,7 @@ Singleton {
         case "total":
             total = Number(f[1]);
             if (total === 0)
-                Ui.notify("Todos os wallpapers já foram testados");
+                Ui.notify("Every wallpaper has already been tested");
             break;
         case "start":
             current = f[1];
@@ -76,9 +76,9 @@ Singleton {
             const finished = root.done > 0;
             root.running = false;
             root.current = "";
-            Wallpapers.rescan(); // atualiza os selos
+            Wallpapers.rescan(); // refreshes the badges
             if (finished)
-                Ui.notify(root.counts.perfect + " funcionam · " + root.counts.minor + " com problemas · " + root.counts.broken + " não funcionam");
+                Ui.notify(root.counts.perfect + " work · " + root.counts.minor + " with issues · " + root.counts.broken + " don't work");
         }
     }
 }

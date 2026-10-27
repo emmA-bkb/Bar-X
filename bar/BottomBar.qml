@@ -3,11 +3,11 @@ import Quickshell
 import Quickshell.Hyprland
 import qs.config
 
-// Doca: pequena, centralizada na parte de baixo da tela.
+// Dock: small, centered at the bottom of the screen.
 BarWindow {
     id: bar
 
-    // So a borda de baixo: o compositor centraliza na horizontal
+    // Only the bottom edge: the compositor centers it horizontally
     anchors.bottom: true
 
     implicitWidth: dock.implicitWidth

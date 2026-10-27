@@ -1,8 +1,8 @@
 import QtQuick
 import QtQuick.Shapes
 
-// Forma de "florzinha" (como os botoes do Material 3 Expressive).
-// lobes = quantidade de petalas, depth = quanto as petalas entram (0..0.3).
+// "Flower" shape (like the Material 3 Expressive buttons).
+// lobes = number of petals, depth = how deep the petals go in (0..0.3).
 Item {
     id: root
 
@@ -10,7 +10,7 @@ Item {
     property int lobes: 8
     property real depth: 0.12
     property color color: "white"
-    property bool spinning: false // gira devagar (ex.: enquanto a musica toca)
+    property bool spinning: false // spins slowly (e.g. while music is playing)
 
     implicitWidth: size
     implicitHeight: size

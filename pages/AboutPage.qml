@@ -17,7 +17,7 @@ Item {
 
             StyledText {
                 anchors.centerIn: parent
-                text: "Uix"
+                text: "Bar X"
                 color: Theme.accent
                 font.pixelSize: 28
                 font.weight: Font.Bold
@@ -26,14 +26,14 @@ Item {
 
         StyledText {
             anchors.horizontalCenter: parent.horizontalCenter
-            text: "Uix 0.1.0"
+            text: "Bar X 0.1.0"
             font.pixelSize: 18
             font.weight: Font.DemiBold
         }
 
         StyledText {
             anchors.horizontalCenter: parent.horizontalCenter
-            text: "Presets de wallpaper + barra de tarefas para Hyprland"
+            text: "Wallpaper + taskbar presets for Hyprland"
             color: Theme.textDim
         }
 
@@ -51,12 +51,12 @@ Item {
 
             StyledButton {
                 icon: Icons.folder
-                text: "Abrir pasta"
+                text: "Open folder"
                 onClicked: Quickshell.execDetached(["xdg-open", Config.dir])
             }
             StyledButton {
                 icon: Icons.code
-                text: "Editar config"
+                text: "Edit config"
                 onClicked: Quickshell.execDetached(["xdg-open", Config.path])
             }
         }

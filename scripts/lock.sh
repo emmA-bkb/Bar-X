@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# Bloqueia a tela (botao "Bloquear" do widget Perfil).
-#   - Ja bloqueada: nao faz nada
-#   - Tem ~/.config/hypr/hyprlock.conf: usa o hyprlock com a sua config
-#   - Senao: usa o hyprlock com o tema do Uix (config/hyprlock.conf), na cor de destaque do Uix
-#   - Sem hyprlock instalado: tenta o bloqueio padrao do sistema
+# Locks the screen ("Lock" button of the Profile widget).
+#   - Already locked: does nothing
+#   - ~/.config/hypr/hyprlock.conf exists: uses hyprlock with your config
+#   - Otherwise: uses hyprlock with the Uix theme (config/hyprlock.conf) in the Uix accent color
+#   - hyprlock not installed: tries the system's default lock
 dir="$(cd "$(dirname "$(readlink -f "$0")")/.." && pwd)"
 
 pidof hyprlock >/dev/null && exit 0
@@ -16,7 +16,7 @@ if [[ -f "$HOME/.config/hypr/hyprlock.conf" ]]; then
     exec hyprlock
 fi
 
-# Cor de destaque do Uix (#rrggbb -> "r, g, b")
+# Uix accent color (#rrggbb -> "r, g, b")
 accent="$(python3 -I -c '
 import json, sys
 try:

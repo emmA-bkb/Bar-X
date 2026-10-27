@@ -84,7 +84,7 @@ Item {
             };
         Monitors.applyLayout(positions);
         draft = {};
-        Ui.notify("Posição dos monitores aplicada");
+        Ui.notify("Monitor layout applied");
     }
 
     Component.onCompleted: Monitors.refresh()
@@ -158,7 +158,7 @@ Item {
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 10
-            text: root.monitors.length > 1 ? "Arraste para mudar a posição. Eles se encaixam encostados, para o mouse passar de um para o outro." : "Só um monitor conectado"
+            text: root.monitors.length > 1 ? "Drag to change the position. They snap edge to edge, so the mouse can move from one to the other." : "Only one monitor connected"
             color: Theme.textMuted
             font.pixelSize: 11
         }
@@ -175,12 +175,12 @@ Item {
         spacing: 8
 
         StyledButton {
-            text: "Desfazer"
+            text: "Undo"
             icon: Icons.restore
             onClicked: root.draft = {}
         }
         StyledButton {
-            text: "Aplicar posições"
+            text: "Apply layout"
             icon: Icons.check
             primary: true
             onClicked: root.applyDraft()
@@ -260,17 +260,17 @@ Item {
             SettingRow {
                 width: parent.width
                 icon: Icons.star
-                title: "Monitor principal"
-                subtitle: details.isPrimary ? "Os widgets e o wallpaper do preset ficam aqui. Recebe o foco ao iniciar a sessão." : "Clique para usar este como principal"
+                title: "Primary monitor"
+                subtitle: details.isPrimary ? "The widgets and the preset's wallpaper live here. It gets the focus on login." : "Click to make this the primary monitor"
 
                 Row {
                 StyledButton {
                     visible: !details.isPrimary
-                    text: "Tornar principal"
+                    text: "Make primary"
                     icon: Icons.star
                     onClicked: {
                         Monitors.setPrimary(details.name);
-                        Ui.notify("Monitor principal: " + details.name);
+                        Ui.notify("Primary monitor: " + details.name);
                     }
                 }
                 Rectangle {
@@ -283,7 +283,7 @@ Item {
                     StyledText {
                         id: primaryText
                         anchors.centerIn: parent
-                        text: "Principal"
+                        text: "Primary"
                         color: Theme.accentText
                         font.weight: Font.Bold
                     }
@@ -308,7 +308,7 @@ Item {
 
                     StyledText {
                         width: parent.width
-                        text: "Resolução  ·  se aparecer uma faixa preta, teste outra (ou aperte \"Auto\" no botão do monitor)"
+                        text: "Resolution  ·  if a black stripe shows up, try another one (or press \"Auto\" on the monitor)"
                         color: Theme.textDim
                         font.pixelSize: 12
                     }
@@ -339,8 +339,8 @@ Item {
             SettingRow {
                 width: parent.width
                 icon: Icons.bar
-                title: "Barra de tarefas neste monitor"
-                subtitle: Config.options.barProvider === "uix" ? "Liga ou desliga a barra do Uix só aqui" : "Vale para a barra do Uix (ative-a na página Barra)"
+                title: "Taskbar on this monitor"
+                subtitle: Config.options.barProvider === "uix" ? "Turns the Bar X taskbar on or off on this monitor only" : "Applies to the Bar X taskbar (turn it on in the Bar page)"
 
                 Toggle {
                     checked: Config.monitorBar(details.name)
@@ -378,12 +378,12 @@ Item {
 
                     StyledText {
                         width: parent.width
-                        text: details.shownWallpaper ? Wallpapers.nameFor(details.shownWallpaper) : "Sem wallpaper"
+                        text: details.shownWallpaper ? Wallpapers.nameFor(details.shownWallpaper) : "No wallpaper"
                         font.weight: Font.DemiBold
                     }
                     StyledText {
                         width: parent.width
-                        text: details.isPrimary ? "Wallpaper principal (o do preset)" : details.ownWallpaper ? "Wallpaper só deste monitor" : "Igual ao monitor principal"
+                        text: details.isPrimary ? "Main wallpaper (the preset's)" : details.ownWallpaper ? "Wallpaper for this monitor only" : "Same as the primary monitor"
                         color: Theme.textMuted
                         font.pixelSize: 12
                     }
@@ -398,11 +398,11 @@ Item {
 
                     StyledButton {
                         visible: !details.isPrimary && details.ownWallpaper !== ""
-                        text: "Usar o principal"
+                        text: "Use the main one"
                         onClicked: Wallpapers.setMonitorWallpaper(details.name, "")
                     }
                     StyledButton {
-                        text: "Escolher wallpaper"
+                        text: "Choose wallpaper"
                         icon: Icons.wallpaper
                         primary: true
                         onClicked: root.pickerOpen = true
@@ -419,7 +419,7 @@ Item {
         anchors.fill: parent
         visible: root.pickerOpen
         z: 20
-        title: "Wallpaper do " + details.name
+        title: "Wallpaper for " + details.name
         onClosed: root.pickerOpen = false
         onChosen: path => {
             root.pickerOpen = false;
@@ -429,10 +429,11 @@ Item {
                     "wallpaper": ""
                 });
                 Wallpapers.apply(path);
+                Config.saveWallpapersToPreset();
             } else {
                 Wallpapers.setMonitorWallpaper(details.name, path);
             }
-            Ui.notify("Aplicando \"" + Wallpapers.nameFor(path) + "\" no " + details.name);
+            Ui.notify("Applying \"" + Wallpapers.nameFor(path) + "\" on " + details.name);
         }
     }
 }

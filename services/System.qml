@@ -4,7 +4,7 @@ import Quickshell
 import Quickshell.Io
 import qs.config
 
-// Informacoes do sistema mostradas no perfil + controle da barra de tarefas.
+// System info shown in the profile + taskbar control.
 Singleton {
     id: root
 
@@ -12,7 +12,7 @@ Singleton {
     readonly property string face: Quickshell.env("HOME") + "/.face"
     property string distro: "Linux"
     property bool waybarRunning: false
-    property bool uixBarRunning: false // processo desktop.qml (barra + widgets)
+    property bool uixBarRunning: false // desktop.qml process (bar + widgets)
 
     readonly property string startBarScript: Quickshell.shellPath("scripts/uix-start.sh")
 
@@ -25,13 +25,13 @@ Singleton {
         Quickshell.execDetached(["pkill", "-SIGUSR2", "-x", "waybar"]);
     }
 
-    // Troca entre a Waybar e a barra do Uix
+    // Switches between Waybar and the Uix bar
     function applyBar(provider) {
         Config.options.barProvider = provider;
         syncDesktop();
     }
 
-    // Liga/desliga os widgets na area de trabalho
+    // Turns the widgets on the desktop on/off
     function setWidgetsEnabled(enabled) {
         Config.options.widgetsEnabled = enabled;
         syncDesktop();

@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Lista os wallpapers do Wallpaper Engine (Steam Workshop + presets) instalados.
+"""Lists the installed Wallpaper Engine wallpapers (Steam Workshop + presets).
 
-Saida, uma linha por item, separada por TAB:
-    assets  <pasta de assets do wallpaper_engine>
-    we      <pasta> <previa> <titulo> <tipo> <compatibilidade>
+Output, one line per item, separated by TAB:
+    assets  <wallpaper_engine assets folder>
+    we      <folder> <preview> <title> <type> <compatibility>
 
-A compatibilidade (perfect/minor/broken) vem dos testes do linux-wallpaper-engine-ux
-e do botao "Testar" do Uix (scripts/scan-compat.py), quando existirem.
+The compatibility (perfect/minor/broken) comes from the linux-wallpaper-engine-ux tests
+and the Uix "Test" button (scripts/scan-compat.py), when they exist.
 """
 import json
 import os
@@ -50,7 +50,7 @@ def read_library_paths(root):
 
 
 def load_overrides():
-    """Compatibilidade: testes do linux-wallpaper-engine-ux, e por cima os do Uix (mais novos)."""
+    """Compatibility: linux-wallpaper-engine-ux tests, overridden by the Uix ones (newer)."""
     result = {}
     path = os.path.join(HOME, ".config", "Linux Wallpaper Engine", "wallpaper-overrides.json")
     try:
