@@ -13,6 +13,7 @@ Scope {
 
         TopBar {
             screen: root.modelData
+            screenName: root.modelData.name
         }
     }
 
@@ -21,6 +22,7 @@ Scope {
 
         BottomBar {
             screen: root.modelData
+            screenName: root.modelData.name
         }
     }
 
@@ -29,6 +31,7 @@ Scope {
 
         SideBar {
             screen: root.modelData
+            screenName: root.modelData.name
         }
     }
 }

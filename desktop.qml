@@ -32,8 +32,11 @@ ShellRoot {
     Connections {
         target: Hyprland
         function onRawEvent(event) {
-            if (event.name === "configreloaded")
+            if (event.name === "configreloaded") {
                 applyBlurRule();
+                // A reload resets monitors to hyprland.lua: put back the layout saved in Uix
+                Quickshell.execDetached(["python3", "-I", Quickshell.shellPath("scripts/monitors.py"), "apply"]);
+            }
         }
     }
 

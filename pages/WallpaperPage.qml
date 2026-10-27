@@ -10,6 +10,8 @@ Item {
     property string tab: Wallpapers.engineItems.length > 0 ? "we" : "local"
     property string query: ""
     property bool scanMenuOpen: false
+    // Wallpaper selected in the gallery (starts on the one on screen). Selecting does not apply it.
+    property string selectedPath: Config.options.wallpaper
 
     readonly property bool community: tab === "community"
     readonly property var source: tab === "we" ? Wallpapers.engineItems : tab === "local" ? Wallpapers.items : Workshop.items
@@ -18,7 +20,7 @@ Item {
         const q = query.trim().toLowerCase();
         return q === "" || community ? source : source.filter(i => i.name.toLowerCase().includes(q));
     }
-    readonly property var selectedItem: community ? (Workshop.items.find(i => i.id === communityId) ?? null) : Config.options.wallpaper ? Wallpapers.find(Config.options.wallpaper) : null
+    readonly property var selectedItem: community ? (Workshop.items.find(i => i.id === communityId) ?? null) : selectedPath ? Wallpapers.find(selectedPath) : null
 
     // Comunidade: item escolhido e o que ja esta instalado (baixado pela Steam)
     property string communityId: ""
@@ -32,7 +34,8 @@ Item {
     // A busca da Comunidade fica guardada no servico (que continua vivo ao trocar de pagina),
     // mas a caixa de busca volta vazia. Ao abrir a aba, a Comunidade segue o que esta na caixa.
     onTabChanged: {
-        if (!community)
+        // Check `tab` directly: the `community` binding may not be updated yet inside this handler
+        if (tab !== "community")
             return;
         const q = query.trim();
         if (!Workshop.loaded && !Workshop.loading) {
@@ -401,13 +404,38 @@ Item {
                 Workshop.loadMore();
         }
 
+        // A new page replaces the whole list, and a GridView jumps back to the top when its
+        // model is replaced. Save the scroll position before the page arrives and restore it after.
+        property real keepY: 0
+        property bool restorePending: false
+
+        function restoreScroll() {
+            contentY = Math.min(keepY, Math.max(0, contentHeight - height));
+            restorePending = false;
+        }
+
+        onCountChanged: {
+            if (restorePending)
+                Qt.callLater(restoreScroll);
+        }
+
+        Connections {
+            target: Workshop
+            function onBeforeAppend() {
+                if (root.tab !== "community")
+                    return;
+                grid.keepY = grid.contentY;
+                grid.restorePending = true;
+            }
+        }
+
         delegate: Item {
             id: cell
 
             required property var modelData
             readonly property bool isWorkshop: modelData.source === "workshop"
             readonly property bool installed: isWorkshop && root.installedIds.includes(modelData.id)
-            readonly property bool selected: isWorkshop ? root.communityId === modelData.id : Config.options.wallpaper === modelData.path
+            readonly property bool selected: isWorkshop ? root.communityId === modelData.id : root.selectedPath === modelData.path
             // Previas da Workshop podem ser GIF sem extensao no link: tenta animar todas ao passar o mouse
             readonly property bool isGif: isWorkshop || modelData.thumb.toLowerCase().endsWith(".gif")
             readonly property var compat: root.compatInfo[modelData.compat] ?? null
@@ -601,7 +629,7 @@ Item {
                     if (cell.isWorkshop)
                         root.communityId = cell.modelData.id;
                     else
-                        Config.options.wallpaper = cell.modelData.path;
+                        root.selectedPath = cell.modelData.path;
                 }
                 onDoubleClicked: {
                     if (cell.isWorkshop) {
@@ -609,7 +637,7 @@ Item {
                         root.applyCommunity(cell.modelData);
                         return;
                     }
-                    Config.options.wallpaper = cell.modelData.path;
+                    root.selectedPath = cell.modelData.path;
                     if (Wallpapers.apply(cell.modelData.path))
                         Ui.notify("Aplicando \"" + cell.modelData.name + "\"");
                 }
@@ -822,7 +850,6 @@ Item {
     function applyCommunity(item) {
         const path = installedPath(item.id);
         if (path) {
-            Config.options.wallpaper = path;
             Wallpapers.apply(path);
             Ui.notify("Aplicando \"" + item.name + "\"");
         } else {
@@ -900,11 +927,13 @@ Item {
                 text: "Usar no preset ativo"
                 icon: Icons.presets
                 opacity: enabled ? 1 : 0.4
-                enabled: Config.options.wallpaper !== "" && Config.preset(Config.options.activePreset) !== null
+                enabled: root.selectedPath !== "" && Config.preset(Config.options.activePreset) !== null
                 onClicked: {
+                    // Saves to the active preset and puts it on screen, so both stay in sync
                     Config.updatePreset(Config.options.activePreset, {
-                        "wallpaper": Config.options.wallpaper
+                        "wallpaper": root.selectedPath
                     });
+                    Wallpapers.apply(root.selectedPath);
                     Ui.notify("Wallpaper salvo no preset \"" + Config.preset(Config.options.activePreset).name + "\"");
                 }
             }

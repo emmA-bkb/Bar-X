@@ -11,6 +11,8 @@ Singleton {
     readonly property string dir: home + "/.config/uix"
     readonly property string path: dir + "/config.json"
     property alias options: adapter
+    // True once config.json has been read (writing options before that would overwrite the file)
+    property bool ready: false
 
     function expand(p) {
         return p.startsWith("~") ? home + p.slice(1) : p;
@@ -129,6 +131,34 @@ Singleton {
         editWidgets(layoutId, ws => ws.filter(w => w.uid !== uid));
     }
 
+    // Command of the menu button on the bar: the saved one, or UIX_LAUNCHER from .env
+    function launcherCommand() {
+        return options.launcherCommand || Env.get("UIX_LAUNCHER", "");
+    }
+
+    // ---------- Monitors ----------
+    // options.monitors = { "<output>": { bar: bool, wallpaper: "<path>" | "", x, y } }
+
+    function monitorSettings(name) {
+        return options.monitors[name] ?? {};
+    }
+
+    function setMonitor(name, patch) {
+        const all = Object.assign({}, options.monitors);
+        all[name] = Object.assign({}, monitorSettings(name), patch);
+        options.monitors = all;
+    }
+
+    // Bar on this monitor? (on by default)
+    function monitorBar(name) {
+        return monitorSettings(name).bar !== false;
+    }
+
+    // Wallpaper of a monitor: its own, or the current (primary / preset) one
+    function monitorWallpaper(name) {
+        return monitorSettings(name).wallpaper || options.wallpaper;
+    }
+
     // Transparencia (efeito vidro) da barra e dos widgets: a do preset ativo, ou a geral
     function transparencyFor(p) {
         return p && p.transparency !== undefined ? p.transparency : options.transparency;
@@ -174,9 +204,11 @@ Singleton {
         watchChanges: true
         onFileChanged: reload()
         onAdapterUpdated: writeAdapter()
+        onLoaded: root.ready = true
         onLoadFailed: error => {
             if (error === FileViewError.FileNotFound)
                 writeAdapter();
+            root.ready = true;
         }
 
         JsonAdapter {
@@ -193,7 +225,7 @@ Singleton {
             // Barra de tarefas: "waybar" (a sua atual) ou "uix" (barras do Uix)
             property string barProvider: "waybar"
             property string barStyle: "floating" // usado quando nenhum preset esta ativo
-            property string launcherCommand: "sh $HOME/.config/waybar/launcher.sh"
+            property string launcherCommand: "" // empty = UIX_LAUNCHER from .env
 
             // Apps na barra: ordenados pela area de trabalho, com o numero dela no icone
             property bool taskbarSortByWorkspace: true
@@ -209,6 +241,8 @@ Singleton {
             property string widgetBackground: "#131618"
             property bool dynamicBarColors: false // a barra tambem usa as cores dos widgets
             property string barActiveColor: "" // cor da florzinha / area ativa; vazio = automatico
+            property var monitors: ({}) // per-monitor settings, see monitorSettings()
+            property string primaryMonitor: "" // empty = the first connected monitor
             property real transparency: 0 // barra e widgets transparentes (0..1), quando nenhum preset esta ativo
             property string activeLayout: "padrao"
 

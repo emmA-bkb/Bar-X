@@ -17,6 +17,9 @@ Singleton {
     property string error: ""
     property int page: 1
 
+    // Emitted right before a new page is appended to `items`, so the grid can keep its scroll position
+    signal beforeAppend
+
     property string sort: "trend" // trend | mostrecent | toprated | subscribed
     property string type: "" // "" | Scene | Video | Web
     property string query: ""
@@ -195,6 +198,7 @@ Singleton {
                             "tags": i.tags
                         }));
                 if (root.request.append) {
+                    root.beforeAppend();
                     const seen = new Set(root.items.map(i => i.id));
                     root.items = root.items.concat(mapped.filter(i => !seen.has(i.id)));
                 } else {

@@ -48,19 +48,93 @@ Singleton {
         }
     }
 
-    // Coloca o wallpaper na tela de verdade (todos os monitores)
+    // Puts a wallpaper on screen as the main wallpaper (primary monitor, and every monitor
+    // without its own wallpaper). Config.options.wallpaper always means "the main wallpaper on screen now".
     function apply(path) {
-        const item = find(path);
-        if (!item)
+        if (!find(path))
             return false;
-        const kind = item.source === "we" ? "we" : item.type;
-        const screens = Quickshell.screens.map(s => s.name);
-        Quickshell.execDetached(["bash", Quickshell.shellPath("scripts/apply-wallpaper.sh"), kind, path, engineAssets || "-"].concat(screens));
+        Config.options.wallpaper = path;
+        applyAll();
         return true;
     }
 
+    // Gives one monitor its own wallpaper ("" = back to the main wallpaper)
+    function setMonitorWallpaper(name, path) {
+        Config.setMonitor(name, {
+            "wallpaper": path
+        });
+        applyAll();
+    }
+
+    // Redraws the wallpaper of every monitor (each one: its own, or the main one)
+    function applyAll() {
+        const pairs = [];
+        for (const s of Quickshell.screens) {
+            const path = Config.monitorWallpaper(s.name);
+            const item = find(path);
+            if (item)
+                pairs.push(s.name + "=" + (item.source === "we" ? "we" : item.type) + ":" + path);
+        }
+        if (pairs.length > 0)
+            Quickshell.execDetached(["bash", Quickshell.shellPath("scripts/apply-wallpaper.sh"), engineAssets || "-"].concat(pairs));
+    }
+
+    // Reads which wallpaper is really running (also catches ones set outside Uix, e.g. by
+    // linux-wallpaper-engine-ux) and stores it as the current wallpaper.
+    function detectCurrent() {
+        if (Config.ready && !detect.running)
+            detect.running = true;
+    }
+
+    Connections {
+        target: Config
+        function onReadyChanged() {
+            root.detectCurrent();
+        }
+    }
+
+    Process {
+        id: detect
+
+        command: ["ps", "-eo", "args"]
+
+        stdout: StdioCollector {
+            onStreamFinished: {
+                // monitor -> wallpaper path, read from the running processes
+                const running = {};
+                for (const line of text.split("\n")) {
+                    if (/linux-wallpaperengine .*--screen-root/.test(line)) {
+                        // "--screen-root A [--screen-root B] --bg X": X goes to every screen since the last --bg
+                        const tokens = line.split(/\s+/);
+                        let screens = [];
+                        for (let i = 0; i < tokens.length - 1; i++) {
+                            if (tokens[i] === "--screen-root") {
+                                screens.push(tokens[i + 1]);
+                            } else if (tokens[i] === "--bg") {
+                                for (const s of screens)
+                                    running[s] = tokens[i + 1];
+                                screens = [];
+                            }
+                        }
+                    } else if (/(^|\/)mpvpaper /.test(line) && line.indexOf(" /") >= 0) {
+                        // mpvpaper ... <monitor> <path>: the path is the first argument starting with "/"
+                        const before = line.slice(0, line.indexOf(" /")).trim().split(/\s+/);
+                        running[before[before.length - 1]] = line.slice(line.indexOf(" /") + 1).trim();
+                    }
+                }
+                const primary = Ui.screen ? Ui.screen.name : "";
+                const found = running[primary] ?? Object.values(running)[0] ?? "";
+                if (found && found !== Config.options.wallpaper)
+                    Config.options.wallpaper = found;
+            }
+        }
+    }
+
     onDirChanged: rescan()
-    Component.onCompleted: rescan()
+    Component.onCompleted: {
+        rescan();
+        detectCurrent();
+    }
 
     Process {
         id: proc

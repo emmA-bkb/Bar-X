@@ -8,7 +8,11 @@ PanelWindow {
     // Modo de teste: UIX_BAR_PREVIEW=1 mostra a barra sem reservar espaco, por cima de tudo
     readonly property bool preview: Quickshell.env("UIX_BAR_PREVIEW") === "1"
 
-    visible: preview || Config.options.barProvider === "uix"
+    // Monitor name, passed in by Bar.qml (reading `screen` here would loop with `visible`)
+    property string screenName: ""
+
+    // Shown when the Uix bar is in use and it is not turned off for this monitor
+    visible: preview || (Config.options.barProvider === "uix" && Config.monitorBar(screenName))
     color: "transparent"
     exclusiveZone: preview ? 0 : BarStyle.thickness + BarStyle.gap
     exclusionMode: preview ? ExclusionMode.Ignore : ExclusionMode.Normal

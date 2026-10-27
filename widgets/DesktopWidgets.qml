@@ -10,7 +10,8 @@ Scope {
     id: root
 
     readonly property var layout: Config.layout(Config.options.activeLayout)
-    readonly property var screen: Quickshell.screens.length > 0 ? Quickshell.screens[0] : null
+    // Widgets live on the primary monitor
+    readonly property var screen: Ui.screen
     readonly property real glass: Config.currentTransparency()
     readonly property bool darkText: Colors.glassText(glass, Wallpapers.thumbFor(Config.options.wallpaper))
 

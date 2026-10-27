@@ -1,40 +1,39 @@
 #!/usr/bin/env bash
-# Aplica um wallpaper de verdade.
-# Uso: apply-wallpaper.sh <we|video|image> <caminho> <pasta-assets|-> <monitor> [monitor...]
-#   we          -> linux-wallpaperengine (mesmos argumentos que o linux-wallpaper-engine-ux usa)
-#   video/image -> mpvpaper
-kind="$1"
-path="$2"
-assets="$3"
-shift 3
-screens=("$@")
+# Puts wallpapers on screen, one per monitor.
+# Usage: apply-wallpaper.sh <assets-dir|-> <monitor>=<kind>:<path> [<monitor>=<kind>:<path>...]
+#   kind we          -> linux-wallpaperengine (a single process with one --bg per monitor)
+#   kind video/image -> mpvpaper (one process per monitor)
+# Example: apply-wallpaper.sh /…/assets DP-1=we:/…/431960/123 HDMI-A-1=image:/…/wallpaper.png
+assets="$1"
+shift
 
-# Para o que estiver rodando nesses monitores
-for s in "${screens[@]}"; do
-    pkill -9 -f "linux-wallpaperengine.*--screen-root.*$s"
-done
+# Stop whatever is running now (on every monitor: they are all redrawn below)
+pkill -9 -f "linux-wallpaperengine.*--screen-root"
 pkill -x mpvpaper
 sleep 0.2
 
-case "$kind" in
-    we)
-        args=()
-        for s in "${screens[@]}"; do
-            args+=(--screen-root "$s")
-        done
-        # Camada "background": fica sempre embaixo dos widgets do Uix (que usam a "bottom").
-        # Sem isso o motor usa a "bottom" e, ao trocar de wallpaper, cobre os widgets.
-        args+=(--layer background --bg "$path" --scaling fill)
-        [[ "$assets" != "-" && -d "$assets" ]] && args+=(--assets-dir "$assets")
-        setsid -f linux-wallpaperengine "${args[@]}" >/dev/null 2>&1
-        ;;
-    video | image)
-        for s in "${screens[@]}"; do
-            setsid -f mpvpaper -l background -o "no-audio loop-file=inf image-display-duration=inf" "$s" "$path" >/dev/null 2>&1
-        done
-        ;;
-    *)
-        echo "tipo desconhecido: $kind" >&2
-        exit 1
-        ;;
-esac
+engine_args=()
+for pair in "$@"; do
+    monitor="${pair%%=*}"
+    rest="${pair#*=}"
+    kind="${rest%%:*}"
+    path="${rest#*:}"
+    [[ -z "$monitor" || -z "$path" ]] && continue
+
+    case "$kind" in
+        we)
+            # "background" layer: always below the Uix widgets (which use "bottom").
+            # Without it the engine uses "bottom" and covers the widgets when the wallpaper changes.
+            engine_args+=(--screen-root "$monitor" --bg "$path" --scaling fill)
+            ;;
+        video | image)
+            setsid -f mpvpaper -l background -o "no-audio loop-file=inf image-display-duration=inf" "$monitor" "$path" >/dev/null 2>&1
+            ;;
+    esac
+done
+
+if ((${#engine_args[@]} > 0)); then
+    args=(--layer background "${engine_args[@]}")
+    [[ "$assets" != "-" && -d "$assets" ]] && args+=(--assets-dir "$assets")
+    setsid -f linux-wallpaperengine "${args[@]}" >/dev/null 2>&1
+fi

@@ -107,7 +107,8 @@ Singleton {
     }
 
     // Tamanho da tela real: as posicoes dos widgets sao relativas a ela
-    readonly property var screen: Quickshell.screens.length > 0 ? Quickshell.screens[0] : null
+    // Primary monitor (widgets live there); falls back to the first connected one
+    readonly property var screen: Quickshell.screens.find(s => s.name === Config.options.primaryMonitor) ?? (Quickshell.screens.length > 0 ? Quickshell.screens[0] : null)
     readonly property real screenWidth: screen ? screen.width : 1920
     readonly property real screenHeight: screen ? screen.height : 1080
 

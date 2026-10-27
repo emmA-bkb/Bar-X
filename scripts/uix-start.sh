@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Inicia o Uix no login: barra + widgets e o wallpaper do preset ativo.
+# Starts Uix on login: bar + widgets, saved monitor layout and the wallpaper of each monitor.
 # No hyprland.lua, no lugar da waybar e do linux-wallpaper-engine-ux:
 #   hl.exec_cmd("/caminho/para/o/projeto/scripts/uix-start.sh")
 #
@@ -35,27 +35,19 @@ widgets="${cfg[1]:-0}"
 apply_on_login="${cfg[2]:-1}"
 wallpaper="${cfg[3]}"
 
-# 1) Barra (Uix ou Waybar) e widgets
+# 1) Bar (Uix or Waybar) and widgets
 run "$dir/scripts/desktop.sh" "$provider" "$widgets"
 
-# 2) Wallpaper do preset ativo
-if [[ "$apply_on_login" == "1" && -n "$wallpaper" && -e "$wallpaper" ]]; then
-    if [[ -f "$wallpaper/project.json" ]]; then
-        kind="we"
-    else
-        case "${wallpaper,,}" in
-            *.mp4 | *.webm | *.mkv | *.mov) kind="video" ;;
-            *) kind="image" ;;
-        esac
-    fi
+# 2) Saved monitor positions + focus on the primary monitor
+run python3 -I "$dir/scripts/monitors.py" apply
 
-    # Pasta de assets do Wallpaper Engine (a mesma que o Uix usa)
-    assets="$(python3 -I "$dir/scripts/scan-wallpaper-engine.py" | awk -F'\t' '$1 == "assets" { print $2; exit }')"
+# 3) Wallpapers: each monitor gets its own, or the active preset's one
+if [[ "$apply_on_login" == "1" ]]; then
+    # Wallpaper Engine assets folder (the same one Uix uses)
+    assets="$(python3 -I "$dir/scripts/scan-wallpaper-engine.py" | awk -F'	' '$1 == "assets" { print $2; exit }')"
+    mapfile -t pairs < <(python3 -I "$dir/scripts/monitors.py" wallpapers)
 
-    # Monitores conectados
-    mapfile -t screens < <(hyprctl monitors -j 2>/dev/null | python3 -I -c 'import json, sys; [print(m["name"]) for m in json.load(sys.stdin)]')
-
-    if ((${#screens[@]} > 0)); then
-        run "$dir/scripts/apply-wallpaper.sh" "$kind" "$wallpaper" "${assets:--}" "${screens[@]}"
+    if ((${#pairs[@]} > 0)); then
+        run "$dir/scripts/apply-wallpaper.sh" "${assets:--}" "${pairs[@]}"
     fi
 fi

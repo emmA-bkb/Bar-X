@@ -8,14 +8,18 @@ Item {
 
     function newPreset() {
         const n = Config.options.presets.length + 1;
-        const styles = Ui.barStyles;
+        const id = "preset-" + Date.now();
+        // Copies the current look: wallpaper on screen, bar style, color, widgets and glass
         Config.addPreset({
-            "id": "preset-" + Date.now(),
+            "id": id,
             "name": "Preset " + n,
-            "bar": styles[n % styles.length].id,
+            "bar": Config.currentBarStyle(),
             "accent": Config.options.accent,
-            "wallpaper": Config.options.wallpaper
+            "wallpaper": Config.options.wallpaper,
+            "widgets": Config.options.activeLayout,
+            "transparency": Config.currentTransparency()
         });
+        Config.options.activePreset = id;
         Ui.notify("Preset criado com o wallpaper e a cor atuais");
     }
 

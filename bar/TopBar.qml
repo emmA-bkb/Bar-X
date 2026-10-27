@@ -44,8 +44,9 @@ BarWindow {
         y: BarStyle.gap
 
         BarButton {
+            visible: Config.launcherCommand() !== ""
             icon: Icons.menu
-            onClicked: Quickshell.execDetached(["bash", "-c", Config.options.launcherCommand])
+            onClicked: Quickshell.execDetached(["bash", "-c", Config.launcherCommand()])
         }
         Workspaces {
             monitor: Hyprland.monitorFor(bar.screen)

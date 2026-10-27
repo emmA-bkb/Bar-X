@@ -4,7 +4,7 @@ import qs.config
 import qs.components
 import qs.services
 
-// CPU, RAM e SSD (igual ao grupo "sistema" da Waybar). Clique na RAM abre o btop.
+// CPU, RAM e SSD. Clicking RAM runs UIX_SYSTEM_MONITOR from .env (e.g. a terminal with btop).
 // Na lateral fica compacto: rotulo pequeno em cima do numero.
 BarGroup {
     spacing: BarStyle.vertical ? 8 : BarStyle.minimal ? 10 : 12
@@ -19,7 +19,7 @@ BarGroup {
             {
                 "label": "RAM",
                 "value": SysStats.ram,
-                "command": ["kitty", "--class", "btop-monitor", "-e", "btop"]
+                "command": Env.get("UIX_SYSTEM_MONITOR", "") ? ["bash", "-c", Env.get("UIX_SYSTEM_MONITOR", "")] : []
             },
             {
                 "label": "SSD",

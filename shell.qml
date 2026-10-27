@@ -36,6 +36,11 @@ ShellRoot {
             "component": widgetsPage
         },
         {
+            "title": "Monitores",
+            "icon": Icons.monitor,
+            "component": monitorsPage
+        },
+        {
             "title": "Aparência",
             "icon": Icons.palette,
             "component": appearancePage
@@ -107,6 +112,10 @@ ShellRoot {
     Component {
         id: widgetsPage
         WidgetsPage {}
+    }
+    Component {
+        id: monitorsPage
+        MonitorsPage {}
     }
     Component {
         id: appearancePage

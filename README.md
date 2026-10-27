@@ -31,4 +31,17 @@ Para iniciar no login, no `~/.config/hypr/hyprland.lua` troque as linhas da Wayb
 hl.exec_cmd("/caminho/para/o/projeto/scripts/uix-start.sh")
 ```
 
-As configurações ficam em `~/.config/uix/config.json`.
+As configurações (presets, widgets, monitores, cores) ficam em `~/.config/uix/config.json`, fora do projeto.
+
+### Configurações da sua máquina (`.env`)
+
+Comandos que dependem do seu sistema ficam num arquivo `.env` na pasta do projeto, que o git ignora:
+
+```bash
+cp .env.example .env   # e edite os valores
+```
+
+| Variável | Para que serve |
+|---|---|
+| `UIX_LAUNCHER` | Comando do botão de menu (☰) da barra. Vazio esconde o botão. |
+| `UIX_SYSTEM_MONITOR` | Comando ao clicar na RAM da barra (ex.: `kitty -e btop`). |

@@ -2,3 +2,6 @@ __pycache__/
 *.pyc
 *.tmp
 .qmlls.ini
+
+# Personal settings of this machine (see .env.example)
+.env
