@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Abre/fecha a janela do Uix. Se ainda nao estiver rodando (ou tiver travado), inicia de novo.
+dir="$(cd "$(dirname "$(readlink -f "$0")")" && pwd)"
+
+# -k 1: se o qs nao sair com o aviso normal, e encerrado a forca
+if ! timeout -k 1 3 qs -p "$dir" ipc call uix toggle >/dev/null 2>&1; then
+    # Sem resposta: fecha o que tiver sobrado (inclusive travado) e abre do zero
+    timeout -k 1 3 qs -p "$dir" kill >/dev/null 2>&1
+    pkill -9 -fx "qs -p $dir -n -d" 2>/dev/null
+    pkill -9 -f "qs -p $dir ipc call uix" 2>/dev/null
+    mkdir -p "$HOME/.config/uix"
+    qs -p "$dir" -n -d
+fi
