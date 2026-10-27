@@ -6,17 +6,11 @@ import qs.config
 import qs.components
 import qs.services
 
-// Perfil: foto (~/.face), usuario@maquina, tempo ligado, clima e atalhos.
+// Perfil: foto (~/.face), nome do usuario, tempo ligado, clima e atalhos.
 WidgetCard {
     id: root
 
-    property string host: ""
     property string uptime: ""
-
-    FileView {
-        path: "/etc/hostname"
-        onLoaded: root.host = text().trim()
-    }
 
     FileView {
         id: uptimeFile
@@ -73,7 +67,7 @@ WidgetCard {
             spacing: 3
 
             WText {
-                text: System.user + (root.host ? "@" + root.host : "")
+                text: System.user
                 font.pixelSize: 18
                 font.weight: Font.DemiBold
             }

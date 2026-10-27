@@ -217,15 +217,11 @@ ShellRoot {
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 2
 
+                        // Only the user name
                         StyledText {
                             text: System.user
                             font.pixelSize: 15
                             font.weight: Font.DemiBold
-                        }
-                        StyledText {
-                            text: System.distro
-                            color: Theme.textMuted
-                            font.pixelSize: 12
                         }
                     }
                 }
