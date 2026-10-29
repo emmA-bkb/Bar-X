@@ -31,6 +31,11 @@ ShellRoot {
             "component": barPage
         },
         {
+            "title": "Menu",
+            "icon": Icons.apps,
+            "component": menuPage
+        },
+        {
             "title": "Widgets",
             "icon": Icons.widgets,
             "component": widgetsPage
@@ -108,6 +113,10 @@ ShellRoot {
     Component {
         id: barPage
         BarPage {}
+    }
+    Component {
+        id: menuPage
+        MenuPage {}
     }
     Component {
         id: widgetsPage

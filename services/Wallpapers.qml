@@ -63,7 +63,7 @@ Singleton {
         Config.setMonitor(name, {
             "wallpaper": path
         });
-        Config.saveWallpapersToPreset();
+        Config.saveWallpapersToPreset(false);
         applyAll();
     }
 

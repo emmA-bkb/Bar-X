@@ -2,7 +2,7 @@ import QtQuick
 import qs.config
 import qs.components
 
-// Widget layout chip. Click selects, double click renames.
+// Widget layout template chip. Click copies it into the active preset, double click renames.
 Rectangle {
     id: root
 
@@ -37,7 +37,12 @@ Rectangle {
         anchors.fill: parent
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
-        onClicked: Config.setActiveLayout(root.layout.id)
+        onClicked: {
+            Config.setActiveLayout(root.layout.id);
+            const p = Config.preset(Config.options.activePreset);
+            if (p)
+                Ui.notify("Widgets from \"" + root.layout.name + "\" copied to \"" + p.name + "\"");
+        }
         onDoubleClicked: {
             input.text = root.layout.name;
             root.editing = true;

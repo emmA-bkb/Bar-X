@@ -18,6 +18,7 @@ Item {
             "wallpaper": Config.options.wallpaper,
             "monitorWallpapers": Config.currentMonitorWallpapers(),
             "widgets": Config.options.activeLayout,
+            "widgetList": Config.copyWidgets(Config.currentLayout() ? Config.currentLayout().widgets : []),
             "transparency": Config.currentTransparency()
         });
         Config.options.activePreset = id;

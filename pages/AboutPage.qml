@@ -26,7 +26,7 @@ Item {
 
         StyledText {
             anchors.horizontalCenter: parent.horizontalCenter
-            text: "Bar X 0.1.0"
+            text: "Bar X 0.2.0"
             font.pixelSize: 18
             font.weight: Font.DemiBold
         }

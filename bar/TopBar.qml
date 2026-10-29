@@ -2,6 +2,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Hyprland
 import qs.config
+import qs.services
 
 // Top bar: Floating, Islands (pills), Minimal or Tonal.
 BarWindow {
@@ -44,9 +45,9 @@ BarWindow {
         y: BarStyle.gap
 
         BarButton {
-            visible: Config.launcherCommand() !== ""
             icon: Icons.menu
-            onClicked: Quickshell.execDetached(["bash", "-c", Config.launcherCommand()])
+            // The Bar X menu, or the command set in UIX_LAUNCHER (.env)
+            onClicked: Config.launcherCommand() !== "" ? Quickshell.execDetached(["bash", "-c", Config.launcherCommand()]) : Launcher.toggle(bar.screenName)
         }
         Workspaces {
             monitor: Hyprland.monitorFor(bar.screen)

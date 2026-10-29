@@ -2,6 +2,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Hyprland
 import qs.config
+import qs.services
 
 // Side bar (left), top to bottom. Variants:
 //   side         -> one full rounded bar
@@ -49,9 +50,9 @@ BarWindow {
         anchors.topMargin: BarStyle.island ? 0 : 8
 
         BarButton {
-            visible: Config.launcherCommand() !== ""
             icon: Icons.menu
-            onClicked: Quickshell.execDetached(["bash", "-c", Config.launcherCommand()])
+            // The Bar X menu, or the command set in UIX_LAUNCHER (.env)
+            onClicked: Config.launcherCommand() !== "" ? Quickshell.execDetached(["bash", "-c", Config.launcherCommand()]) : Launcher.toggle(bar.screenName)
         }
         Workspaces {
             monitor: Hyprland.monitorFor(bar.screen)

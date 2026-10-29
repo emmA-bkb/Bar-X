@@ -37,21 +37,50 @@ Singleton {
     }
 
     // ---------- Widget layouts ----------
+    // Each preset keeps its own widgets (preset.widgetList). The layouts in options.widgetLayouts
+    // are templates: choosing one copies its widgets into the active preset (preset.widgets =
+    // the template they came from). Without an active preset, the active template is used.
+    // A preset's widgets look like a layout with the id "preset:<preset id>".
 
     function layout(id) {
         return options.widgetLayouts.find(l => l.id === id) ?? null;
     }
 
-    // Layout shown for a preset (without its own layout it uses the active one)
-    function layoutFor(p) {
-        return (p && p.widgets ? layout(p.widgets) : null) ?? layout(options.activeLayout);
+    function copyWidgets(widgets) {
+        return JSON.parse(JSON.stringify(widgets ?? []));
     }
 
+    // Widgets of a preset, as a layout { id, name, widgets }. Presets saved before they kept
+    // their own widgets show their template.
+    function layoutFor(p) {
+        if (!p)
+            return layout(options.activeLayout);
+        const base = p.widgetList ? null : ((p.widgets ? layout(p.widgets) : null) ?? layout(options.activeLayout));
+        return {
+            "id": "preset:" + p.id,
+            "name": p.name,
+            "widgets": p.widgetList ?? (base ? base.widgets : [])
+        };
+    }
+
+    // Widgets on the desktop now: the active preset's, or the active template
+    function currentLayout() {
+        return layoutFor(preset(options.activePreset));
+    }
+
+    // A template or a preset's widgets, by id
+    function findLayout(id) {
+        return id.startsWith("preset:") ? layoutFor(preset(id.slice(7))) : layout(id);
+    }
+
+    // Chooses a template; with an active preset, its widgets are replaced by a copy of the template's
     function setActiveLayout(id) {
         options.activeLayout = id;
-        if (preset(options.activePreset))
+        const l = layout(id);
+        if (preset(options.activePreset) && l)
             updatePreset(options.activePreset, {
-                "widgets": id
+                "widgets": id,
+                "widgetList": copyWidgets(l.widgets)
             });
     }
 
@@ -80,8 +109,14 @@ Singleton {
     }
 
     function editWidgets(layoutId, fn) {
-        const l = layout(layoutId);
-        if (l)
+        const l = findLayout(layoutId);
+        if (!l)
+            return;
+        if (layoutId.startsWith("preset:"))
+            updatePreset(layoutId.slice(7), {
+                "widgetList": fn(l.widgets)
+            });
+        else
             updateLayout(layoutId, {
                 "widgets": fn(l.widgets)
             });
@@ -114,7 +149,7 @@ Singleton {
 
     // Copies a widget (same size and background) to the given position
     function duplicateWidget(layoutId, uid, x, y) {
-        const l = layout(layoutId);
+        const l = findLayout(layoutId);
         const w = l ? l.widgets.find(i => i.uid === uid) : null;
         if (!w)
             return "";
@@ -173,23 +208,84 @@ Singleton {
         return out;
     }
 
-    // Wallpaper a preset puts on a non-primary monitor. Presets saved before they stored
-    // monitor wallpapers leave that monitor as it is.
+    // Wallpaper a preset puts on a non-primary monitor: the one saved in that preset, or the
+    // preset's main wallpaper (never what is on screen now, so presets don't change each other)
     function presetMonitorWallpaper(p, name) {
-        const saved = p && p.monitorWallpapers ? p.monitorWallpapers[name] : undefined;
-        if (saved !== undefined)
-            return saved || p.wallpaper || options.wallpaper;
-        return monitorSettings(name).wallpaper || (p && p.wallpaper) || options.wallpaper;
+        const saved = p && p.monitorWallpapers ? p.monitorWallpapers[name] : "";
+        return saved || (p && p.wallpaper) || options.wallpaper;
     }
 
-    // Keeps the active preset in sync with the wallpapers on screen
-    function saveWallpapersToPreset() {
+    // Saves the other monitors' wallpapers (and, with withMain, the main one) to the active preset
+    function saveWallpapersToPreset(withMain) {
         if (!preset(options.activePreset))
             return;
-        updatePreset(options.activePreset, {
-            "wallpaper": options.wallpaper,
+        const patch = {
             "monitorWallpapers": currentMonitorWallpapers()
+        };
+        if (withMain)
+            patch.wallpaper = options.wallpaper;
+        updatePreset(options.activePreset, patch);
+    }
+
+    // Presets made before they kept their own widgets and other monitors' wallpapers get a copy
+    // of their template's widgets and of what the other monitors show now, so each preset
+    // keeps its own from then on
+    function migratePresets() {
+        const current = Quickshell.screens.length >= 2 ? currentMonitorWallpapers() : null;
+        let changed = false;
+        const list = options.presets.map(p => {
+            const patch = {};
+            if (current && p.monitorWallpapers === undefined)
+                patch.monitorWallpapers = current;
+            if (p.widgetList === undefined)
+                patch.widgetList = copyWidgets(layoutFor(p).widgets);
+            if (Object.keys(patch).length === 0)
+                return p;
+            changed = true;
+            return Object.assign({}, p, patch);
         });
+        if (changed)
+            options.presets = list;
+    }
+
+    // ---------- Wallpaper Engine settings ----------
+    // options.wallpaperSettings = { "<path>": { sound, volume, autoMute, fps, scaling, particles,
+    //   mouse, parallax, properties: { "<name>": value } } }. fps 0 = options.wallpaperFps.
+    // scripts/wallpaper-settings.py turns them into linux-wallpaperengine arguments.
+    readonly property var wallpaperDefaults: ({
+            "sound": true,
+            "volume": 15,
+            "autoMute": true,
+            "fps": 0,
+            "scaling": "fill",
+            "particles": true,
+            "mouse": true,
+            "parallax": true,
+            "properties": {}
+        })
+
+    function wallpaperSetting(path) {
+        return Object.assign({}, wallpaperDefaults, options.wallpaperSettings[path] ?? {});
+    }
+
+    function setWallpaperSetting(path, patch) {
+        const all = Object.assign({}, options.wallpaperSettings);
+        all[path] = Object.assign({}, all[path] ?? {}, patch);
+        options.wallpaperSettings = all;
+    }
+
+    function setWallpaperProperty(path, name, value) {
+        const props = Object.assign({}, wallpaperSetting(path).properties);
+        props[name] = value;
+        setWallpaperSetting(path, {
+            "properties": props
+        });
+    }
+
+    function resetWallpaperSettings(path) {
+        const all = Object.assign({}, options.wallpaperSettings);
+        delete all[path];
+        options.wallpaperSettings = all;
     }
 
     // Transparency (glass effect) of the bar and widgets: the active preset's, or the global one
@@ -226,15 +322,14 @@ Singleton {
         options.accent = p.accent;
         if (p.wallpaper)
             options.wallpaper = p.wallpaper;
-        if (p.monitorWallpapers) {
-            const all = Object.assign({}, options.monitors);
-            for (const name in p.monitorWallpapers)
-                if (name !== primaryName())
-                    all[name] = Object.assign({}, all[name] ?? {}, {
-                        "wallpaper": p.monitorWallpapers[name]
-                    });
-            options.monitors = all;
-        }
+        // Each other monitor gets the preset's saved wallpaper ("" or none = the main one)
+        const all = Object.assign({}, options.monitors);
+        for (const s of Quickshell.screens)
+            if (s.name !== primaryName())
+                all[s.name] = Object.assign({}, all[s.name] ?? {}, {
+                    "wallpaper": (p.monitorWallpapers ?? {})[s.name] ?? ""
+                });
+        options.monitors = all;
         if (p.widgets && layout(p.widgets))
             options.activeLayout = p.widgets;
     }
@@ -246,11 +341,15 @@ Singleton {
         watchChanges: true
         onFileChanged: reload()
         onAdapterUpdated: writeAdapter()
-        onLoaded: root.ready = true
+        onLoaded: {
+            root.ready = true;
+            root.migratePresets();
+        }
         onLoadFailed: error => {
             if (error === FileViewError.FileNotFound)
                 writeAdapter();
             root.ready = true;
+            root.migratePresets();
         }
 
         JsonAdapter {
@@ -286,6 +385,14 @@ Singleton {
             property var monitors: ({}) // per-monitor settings, see monitorSettings()
             property string primaryMonitor: "" // empty = the first connected monitor
             property real transparency: 0 // transparent bar and widgets (0..1), when no preset is active
+            property var wallpaperSettings: ({}) // per Wallpaper Engine wallpaper, see wallpaperSetting()
+            property int wallpaperFps: 30 // default FPS limit of Wallpaper Engine wallpapers
+            property string wallpaperPause: "fullscreen" // "never" | "fullscreen" | "windows", see scripts/wallpaper-pause.py
+            property var launcherPinned: [] // desktop entry ids pinned at the top of the menu
+            property var launcherUsage: ({}) // desktop entry id -> times opened from the menu
+            property string launcherStyle: "panel" // "panel" | "spotlight" | "curtain" | "orbit", see services/Launcher.qml
+            property bool launcherPower: true // power buttons in the panel menu
+            property bool launcherAllApps: true // every app below the pinned ones in the panel menu
             property string activeLayout: "padrao"
 
             // x/y positions are fractions of the screen (0..1), top-left corner of the widget

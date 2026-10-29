@@ -10,6 +10,7 @@ Item {
     property string tab: Wallpapers.engineItems.length > 0 ? "we" : "local"
     property string query: ""
     property bool scanMenuOpen: false
+    property bool settingsOpen: false
     // Wallpaper selected in the gallery (starts on the one on screen). Selecting does not apply it.
     property string selectedPath: Config.options.wallpaper
 
@@ -922,6 +923,14 @@ Item {
                 onClicked: root.applyCommunity(root.selectedItem)
             }
 
+            // Sound, FPS, scaling and the wallpaper's own options (+ pausing for all wallpapers)
+            StyledButton {
+                visible: !root.community
+                text: "Settings"
+                icon: Icons.tune
+                onClicked: root.settingsOpen = true
+            }
+
             StyledButton {
                 visible: !root.community
                 text: "Use in active preset"
@@ -951,5 +960,14 @@ Item {
                 }
             }
         }
+    }
+
+    // ---------- Wallpaper settings ----------
+    WallpaperSettingsPopup {
+        anchors.fill: parent
+        visible: root.settingsOpen
+        z: 20
+        item: root.selectedItem && root.selectedItem.source !== "workshop" ? root.selectedItem : null
+        onClosed: root.settingsOpen = false
     }
 }

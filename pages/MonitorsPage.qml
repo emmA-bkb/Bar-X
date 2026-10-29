@@ -1,10 +1,11 @@
 import QtQuick
+import Quickshell
 import qs.config
 import qs.components
 import qs.services
 
 // Monitors: layout (drag to arrange, so the mouse goes from one to the other), primary
-// monitor, taskbar on/off and a wallpaper for each monitor.
+// monitor, taskbar on/off, dimming after inactivity and a wallpaper for each monitor.
 Item {
     id: root
 
@@ -291,46 +292,97 @@ Item {
                 }
             }
 
-            // Resolution
+            // Resolution and refresh rate: two dropdowns with every mode the monitor offers
             Rectangle {
+                id: modeBox
+
+                // "1920x1080" of each mode, biggest first (the modes come sorted)
+                readonly property var resolutions: {
+                    const out = [];
+                    for (const m of root.sel ? root.sel.modes : [])
+                        if (!out.some(o => o.value === m.w + "x" + m.h))
+                            out.push({
+                                "value": m.w + "x" + m.h,
+                                "label": m.w + " × " + m.h
+                            });
+                    return out;
+                }
+                readonly property string currentRes: root.sel ? root.sel.mode.split("@")[0] : ""
+                readonly property int currentHz: root.sel ? Math.round(Number(root.sel.mode.split("@")[1])) : 0
+                // Refresh rates of the current resolution, fastest first
+                readonly property var rates: (root.sel ? root.sel.modes : []).filter(m => m.w + "x" + m.h === currentRes).map(m => ({
+                            "value": m.mode,
+                            "label": m.refresh + " Hz",
+                            "refresh": m.refresh
+                        }))
+                readonly property string currentRate: (rates.find(r => r.refresh === currentHz) ?? {
+                        "value": ""
+                    }).value
+
                 width: parent.width
-                height: resColumn.height + 28
+                height: modeColumn.height + 28
                 radius: Theme.radiusMedium
                 color: Theme.surfaceHover
 
                 Column {
-                    id: resColumn
+                    id: modeColumn
                     anchors.left: parent.left
                     anchors.right: parent.right
                     anchors.top: parent.top
                     anchors.margins: 14
                     spacing: 10
 
-                    StyledText {
-                        width: parent.width
-                        text: "Resolution  ·  if a black stripe shows up, try another one (or press \"Auto\" on the monitor)"
-                        color: Theme.textDim
-                        font.pixelSize: 12
-                    }
+                    Row {
+                        spacing: 12
 
-                    Flow {
-                        width: parent.width
-                        spacing: 6
+                        Column {
+                            spacing: 6
 
-                        Repeater {
-                            model: root.sel ? root.sel.modes : []
-
-                            delegate: FilterChip {
-                                required property var modelData
-                                anchors.verticalCenter: undefined // positioned by the Flow
-                                label: modelData.w + "×" + modelData.h + " · " + modelData.refresh + " Hz"
-                                active: root.sel !== null && root.sel.mode === modelData.mode
-                                onClicked: {
-                                    Monitors.setMode(details.name, modelData.mode);
-                                    Ui.notify(details.name + ": " + modelData.w + "×" + modelData.h);
+                            StyledText {
+                                text: "Resolution"
+                                color: Theme.textDim
+                                font.pixelSize: 12
+                            }
+                            Dropdown {
+                                width: 220
+                                options: modeBox.resolutions
+                                current: modeBox.currentRes
+                                onChosen: res => {
+                                    // Keeps the refresh rate when the new resolution has it, otherwise the fastest one
+                                    const opts = root.sel.modes.filter(m => m.w + "x" + m.h === res);
+                                    const pick = opts.find(m => m.refresh === modeBox.currentHz) ?? opts[0];
+                                    Monitors.setMode(details.name, pick.mode);
+                                    Ui.notify(details.name + ": " + pick.w + "×" + pick.h + " · " + pick.refresh + " Hz");
                                 }
                             }
                         }
+
+                        Column {
+                            spacing: 6
+
+                            StyledText {
+                                text: "Refresh rate"
+                                color: Theme.textDim
+                                font.pixelSize: 12
+                            }
+                            Dropdown {
+                                width: 160
+                                options: modeBox.rates
+                                current: modeBox.currentRate
+                                onChosen: mode => {
+                                    Monitors.setMode(details.name, mode);
+                                    Ui.notify(details.name + ": " + Math.round(Number(mode.split("@")[1])) + " Hz");
+                                }
+                            }
+                        }
+                    }
+
+                    StyledText {
+                        width: parent.width
+                        text: "If a black stripe shows up, try another resolution (or press \"Auto\" on the monitor)."
+                        color: Theme.textMuted
+                        font.pixelSize: 12
+                        wrapMode: Text.WordWrap
                     }
                 }
             }
@@ -346,6 +398,81 @@ Item {
                     checked: Config.monitorBar(details.name)
                     onToggled: c => Config.setMonitor(details.name, {
                             "bar": c
+                        })
+                }
+            }
+
+            // Dim after inactivity (widgets/ScreenDim.qml, in the desktop process)
+            SettingRow {
+                width: parent.width
+                icon: Icons.sun
+                title: "Dim after inactivity"
+                subtitle: "Darkens this monitor when the computer isn't being used"
+
+                Row {
+                    spacing: 6
+                    Repeater {
+                        model: [0, 5, 10, 15, 30, 60]
+                        delegate: FilterChip {
+                            required property int modelData
+                            label: modelData === 0 ? "Off" : modelData + " min"
+                            active: (Config.monitorSettings(details.name).dimAfter ?? 0) === modelData
+                            onClicked: Config.setMonitor(details.name, {
+                                "dimAfter": modelData
+                            })
+                        }
+                    }
+                }
+            }
+
+            SettingRow {
+                visible: (Config.monitorSettings(details.name).dimAfter ?? 0) > 0
+                width: parent.width
+                icon: Icons.sun
+                title: "How dark  " + Math.round(dimSlider.shownValue * 100) + "%"
+                subtitle: "Move the slider to see it on the monitor"
+
+                StyledSlider {
+                    id: dimSlider
+                    width: 240
+                    from: 0.2
+                    to: 0.9
+                    stepSize: 0.05
+                    value: Config.monitorSettings(details.name).dimLevel ?? 0.6
+                    onMoved: v => {
+                        dimPreview.level = v;
+                        if (!dimPreview.running)
+                            dimPreview.start();
+                    }
+                    onCommitted: v => {
+                        Config.setMonitor(details.name, {
+                            "dimLevel": v
+                        });
+                        dimPreview.level = v;
+                        dimPreview.restart();
+                    }
+                }
+
+                // Sends the level to the desktop process at most every 150 ms while dragging
+                Timer {
+                    id: dimPreview
+                    property real level: 0.6
+                    interval: 150
+                    onTriggered: Quickshell.execDetached(["qs", "-p", Quickshell.shellPath("desktop.qml"), "ipc", "call", "uixdesktop", "dimPreview", details.name, String(level)])
+                }
+            }
+
+            SettingRow {
+                visible: (Config.monitorSettings(details.name).dimAfter ?? 0) > 0 && Monitors.list.length > 1
+                width: parent.width
+                icon: Icons.monitor
+                title: "Also while you use the other monitor"
+                subtitle: "Counts the time since the mouse left this monitor"
+
+                Toggle {
+                    checked: Config.monitorSettings(details.name).dimAway === true
+                    onToggled: c => Config.setMonitor(details.name, {
+                            "dimAway": c
                         })
                 }
             }
@@ -429,7 +556,7 @@ Item {
                     "wallpaper": ""
                 });
                 Wallpapers.apply(path);
-                Config.saveWallpapersToPreset();
+                Config.saveWallpapersToPreset(true);
             } else {
                 Wallpapers.setMonitorWallpaper(details.name, path);
             }

@@ -111,7 +111,7 @@ Singleton {
                 });
         }
         Config.options.primaryMonitor = name;
-        Config.saveWallpapersToPreset();
+        Config.saveWallpapersToPreset(true);
         // Moves workspaces 1-10 to the new primary monitor and focuses it (scripts/monitors.py apply)
         applyTimer.restart();
     }

@@ -4,21 +4,22 @@ import qs.components
 import qs.services
 import qs.widgets
 
-// Widget layout editor: drag the widgets on the desktop preview.
-// Changes are saved to the layout; the desktop shows the active one.
+// Widget editor: drag the widgets on the desktop preview. With an active preset, its own
+// widgets are edited (other presets don't change); the chips are layout templates, and choosing
+// one copies its widgets into the preset.
 Item {
     id: root
 
-    readonly property var layout: Config.layout(Config.options.activeLayout)
+    readonly property var layout: Config.currentLayout()
     readonly property var activePreset: Config.preset(Config.options.activePreset)
     property bool pickerOpen: false
 
     function newLayout() {
         const n = Config.options.widgetLayouts.length + 1;
-        // Starts as a copy of the current layout
-        const widgets = layout ? JSON.parse(JSON.stringify(layout.widgets)) : [];
+        // Saves the current widgets as a new template
+        const widgets = layout ? Config.copyWidgets(layout.widgets) : [];
         Config.addLayout("My layout " + n, widgets);
-        Ui.notify("Layout created. Double-click the name to rename it");
+        Ui.notify("Saved as a new layout. Double-click the name to rename it");
     }
 
     function addWidget(type) {
@@ -162,7 +163,7 @@ Item {
             anchors.centerIn: parent
             width: parent.width - 40
             horizontalAlignment: Text.AlignHCenter
-            text: "Click a widget to adjust it  ·  Drag the corner to resize  ·  Arrows move (Shift = 1px)  ·  + / − size  ·  Ctrl+D duplicates  ·  Delete removes"
+            text: (root.activePreset ? "Editing the widgets of \"" + root.activePreset.name + "\" (only this preset changes)\n" : "") + "Click a widget to adjust it  ·  Drag the corner to resize  ·  Arrows move (Shift = 1px)  ·  + / − size  ·  Ctrl+D duplicates  ·  Delete removes"
             color: Theme.textMuted
             font.pixelSize: 12
         }

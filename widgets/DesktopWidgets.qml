@@ -9,7 +9,7 @@ import qs.services
 Scope {
     id: root
 
-    readonly property var layout: Config.layout(Config.options.activeLayout)
+    readonly property var layout: Config.currentLayout()
     // Widgets live on the primary monitor
     readonly property var screen: Ui.screen
     readonly property real glass: Config.currentTransparency()
